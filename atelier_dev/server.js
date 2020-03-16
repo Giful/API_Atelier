@@ -37,6 +37,13 @@ app.get("/", (req, res) => {
     res.send("Atelier API\n");
 });
 
+app.get("/joueurs", (req, res) => {
+
+    let page = req.param('page');
+    let queryJoueurs = `Select * from joueurs`;
+
+    res.send("slt");
+})
 
 // Les autres méthodes ne sont pas allowed
 
@@ -63,8 +70,10 @@ const db = mysql.createConnection({
 db.connect(err => {
     if (err) {
         console.error(err);
+    }else{
+        console.log("Connected to database");
     }
-    console.log("Connected to database");
+    
 });
 
 // Pour y accéder, port 19080
