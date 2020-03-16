@@ -1,0 +1,11 @@
+/apiDoc
+
+/atelier_dev/node_modules
+
+/atelier_dev/package-lock.json
+
+# PhPStorm
+.idea
+
+# Mac
+.DS_Store
