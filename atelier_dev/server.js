@@ -297,9 +297,43 @@ app.get('/series/:id/photos', function (req, res) {
 
             res.json({
                 "type": "resource",
-                "series": {
-                    "photos": resultPhotos
-                }
+                "photos": resultPhotos
+            });
+        }
+    });
+});
+
+app.get('/photos/:id', function (req, res) {
+    let queryPhotosId = `SELECT * FROM photo WHERE idPhoto = ${req.params.id}`;
+
+    db.query(queryPhotosId, (errPhotosId, resultPhotosId) => {
+        if (errPhotosId) {
+            let erreur = {
+                "type": "error",
+                "error": 500,
+                "message": errPhotosId
+            };
+            JSON.stringify(erreur);
+            res.send(erreur);
+        }
+        else if(resultPhotosId == "") {
+            let erreur = {
+                "type": "error",
+                "error": 404,
+                "message": "L'id " + req.params.id + " n'existe pas"
+            };
+            JSON.stringify(erreur);
+            res.send(erreur);
+        }
+        else {
+            res.json({
+                "type": "resource",
+                "links": {
+                    "self": {
+                        "href": "/photos/" + req.params.id
+                    }
+                },
+                "photo": resultPhotosId
             });
         }
     });
