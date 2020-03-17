@@ -38,7 +38,7 @@ app.get("/", (req, res) => {
     res.send("Atelier API\n");
 });
 
-app.get("/joueurs", (req, res) => {
+app.get("/joueurs", (req, res) => {
 
     let page = req.param('page');
     if (typeof page === 'undefined' || page <= 0) page = 1;
@@ -48,7 +48,7 @@ app.get("/joueurs", (req, res) => {
 
     let count = 0;
     db.query(queryJoueurs, (errJoueurs, resultJoueurs) => {
-        if(errJoueurs) console.log(errJoueurs);
+        if (errJoueurs) console.log(errJoueurs);
         else {
             count = resultJoueurs.length;
 
@@ -61,10 +61,10 @@ app.get("/joueurs", (req, res) => {
             let prev = page - 1;
             if (prev < 1) prev = 1;
 
-            resultJoueurs.forEach(function (j , index) {
+            resultJoueurs.forEach(function (j, index) {
                 resultJoueurs[index] = JSON.parse(JSON.stringify({
                     joueur: j,
-                    links: {self: {href:"/joueurs/" + j.idJoueur}}
+                    links: { self: { href: "/joueurs/" + j.idJoueur } }
                 }));
             });
 
@@ -92,42 +92,95 @@ app.get("/joueurs", (req, res) => {
     });
 });
 
-app.get("/joueurs/:id", function(req, res) {
+app.get("/joueurs/:id", function (req, res) {
 
-    let idJ = req.params.id;
-    let queryJoueurById = `SELECT * from joueur WHERE idJoueur = ${idJ}`;
+    let queryJoueurById = `SELECT * from joueur WHERE idJoueur = ${req.params.id}`;
 
-    db.query(queryJoueurById, (err, result) => {
-        if(err) {
+    db.query(queryJoueurById, (errJoueurId, resultjoueurId) => {
+        if (errJoueurId) {
             let erreur = {
                 "type": "error",
                 "error": 500,
-                "message": err
+                "message": errJoueurId
             };
-        } else if(result == "") {
+        } else if (resultjoueurId == "") {
             let erreur = {
                 "type": "error",
                 "error": 404,
-                "message": req.params.id + " n'existe pas" 
+                "message": req.params.id + " n'existe pas"
             };
             JSON.stringify(erreur);
             res.send(erreur);
-        }else {
+        } else {
             res.json({
-                "type" : "ressource",
+                "type": "ressource",
                 "links": {
-                    "self": "/joueurs/" + req.params.id 
+                    "self": "/joueurs/" + req.params.id
                 },
                 "joueur": {
-                    "id": result[0].idJoueur,
-                    "created_at" : result[0].created_at,
-                    "mail" : result[0].mail,
-                    "nom" : result[0].nom,
+                    "id": resultjoueurId[0].idJoueur,
+                    "created_at": resultjoueurId[0].created_at,
+                    "mail": resultjoueurId[0].mail,
+                    "nom": resultjoueurId[0].nom,
                 }
             });
         }
     });
 });
+
+app.get("/joueurs/:id/parties", function (req, res) {
+
+    let page = req.param('page');
+    if (typeof page === 'undefined' || page <= 0) page = 1;
+    let debutLimit = (page - 1) * 10;
+
+    let queryPartiesJoueur = `SELECT nb_photos, score, created_at FROM partie WHERE refJoueur = ${req.params.id} limit ${debutLimit}, 10`;
+
+    let count = 0;
+    
+    db.query(queryPartiesJoueur, (errPartiesJoueur, resultPartiesJoueur) => {
+        if (errPartiesJoueur) {
+            let erreur = {
+                "type": "error",
+                "error": 500,
+                "message": errPartiesJoueur
+            };
+        } else if (resultPartiesJoueur == "") {
+            let erreur = {
+                "type": "error",
+                "error": 404,
+                "message": req.params.id + " n'existe pas"
+            };
+            JSON.stringify(erreur);
+            res.send(erreur);
+        } else {
+            count = resultPartiesJoueur.length;
+
+            let pageMax = Math.ceil(count / 10);
+            if (page > pageMax) page = pageMax;
+
+            let next = parseInt(page) + 1;
+            if (next > pageMax) next = pageMax;
+
+            let prev = page - 1;
+            if (prev < 1) prev = 1;
+
+            resultPartiesJoueur.forEach(function (pj, index) {
+                resultPartiesJoueur[index] = JSON.parse(JSON.stringify({
+                    partiejoueur: pj,
+                    links: { self: { href: "/parties/" + pj.idPartie } }
+                }));
+            });
+            res.json({
+                "type": "ressource",
+                "links": {
+                    "joueur": "/joueurs/" + req.params.id
+                },
+                "parties": resultPartiesJoueur
+            });
+        }
+    })
+})
 
 app.get('/series', function (req, res) {
     let page = req.param('page');
@@ -162,7 +215,7 @@ app.get('/series', function (req, res) {
             resultSeries.forEach(function (s, index) {
                 resultSeries[index] = JSON.parse(JSON.stringify({
                     serie: s,
-                    links: {self: {href: "/series/" + s.idSerie}}
+                    links: { self: { href: "/series/" + s.idSerie } }
                 }));
             });
 
@@ -202,7 +255,7 @@ app.get('/series/:id', function (req, res) {
             };
             JSON.stringify(erreur);
             res.send(erreur);
-        } else if(resultSerieId == "") {
+        } else if (resultSerieId == "") {
             let erreur = {
                 "type": "error",
                 "error": 404,
@@ -224,7 +277,7 @@ app.get('/series/:id', function (req, res) {
                     JSON.stringify(erreur);
                     res.send(erreur);
                 }
-                else if(resultPhotos == "") {
+                else if (resultPhotos == "") {
                     let erreur = {
                         "type": "error",
                         "error": 404,
@@ -237,7 +290,7 @@ app.get('/series/:id', function (req, res) {
                     resultPhotos.forEach(function (p, index) {
                         resultPhotos[index] = JSON.parse(JSON.stringify({
                             photo: p,
-                            links: {self: {href: "/photos/" + p.idPhoto}}
+                            links: { self: { href: "/photos/" + p.idPhoto } }
                         }));
                     });
 
@@ -279,7 +332,7 @@ app.get('/series/:id/photos', function (req, res) {
             JSON.stringify(erreur);
             res.send(erreur);
         }
-        else if(resultPhotos == "") {
+        else if (resultPhotos == "") {
             let erreur = {
                 "type": "error",
                 "error": 404,
@@ -292,7 +345,7 @@ app.get('/series/:id/photos', function (req, res) {
             resultPhotos.forEach(function (p, index) {
                 resultPhotos[index] = JSON.parse(JSON.stringify({
                     photo: p,
-                    links: {self: {href: "/photos/" + p.idPhoto}}
+                    links: { self: { href: "/photos/" + p.idPhoto } }
                 }));
             });
 
@@ -317,7 +370,7 @@ app.get('/photos/:id', function (req, res) {
             JSON.stringify(erreur);
             res.send(erreur);
         }
-        else if(resultPhotosId == "") {
+        else if (resultPhotosId == "") {
             let erreur = {
                 "type": "error",
                 "error": 404,
@@ -453,8 +506,8 @@ app.get('/parties/:id', function (req, res) {
                                 "type": "ressource",
                                 "links": {
                                     "self": "/parties/" + req.params.id,
-                                    "joueur" : "/joueurs/" + resultPartieId[0].refJoueur,
-                                    "serie" : "/series/" + resultPartieId[0].refSerie
+                                    "joueur": "/joueurs/" + resultPartieId[0].refJoueur,
+                                    "serie": "/series/" + resultPartieId[0].refSerie
                                 },
                                 "partie": {
                                     "id": resultPartieId[0].idPartie,
@@ -500,24 +553,24 @@ app.post("/photos", (req, res) => {
 });
 
 
-app.post("/joueur", (req,res) => {
-   let pwd = passwordHash.generate(req.body.mdp)
-   let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-   db.query(`INSERT INTO joueur (mail,pseudo,password,created_at,updated_at) VALUES ("${req.body.mail}","${req.body.pseudo}","${pwd}","${dateAct}","${dateAct}")`, (err,result) => {
-       if(err) {
-           console.error(err);
-           res.status(500).send(JSON.stringify(err));
-       }else{
-           res.status(201).json(req.body)
-       }
-   })
+app.post("/joueur", (req, res) => {
+    let pwd = passwordHash.generate(req.body.mdp)
+    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
+    db.query(`INSERT INTO joueur (mail,pseudo,password,created_at,updated_at) VALUES ("${req.body.mail}","${req.body.pseudo}","${pwd}","${dateAct}","${dateAct}")`, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send(JSON.stringify(err));
+        } else {
+            res.status(201).json(req.body)
+        }
+    })
 });
 
 
 
 app.post("/parties", (req, res) => {
     let token = null;
-    if(req.headers['x-quizz-token'] != null)  token = req.headers['x-quizz-token'];
+    if (req.headers['x-quizz-token'] != null) token = req.headers['x-quizz-token'];
     if (token != null) {
         let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
         db.query(`INSERT INTO partie (token, nb_photos, statut, refJoueur, refSerie, created_at, updated_at) VALUES ("${token}","${req.body.nb_photos}","${req.body.statut}","${req.body.refJoueur}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
@@ -556,10 +609,10 @@ const db = mysql.createConnection({
 db.connect(err => {
     if (err) {
         console.error(err);
-    }else{
+    } else {
         console.log("Connected to database");
     }
-    
+
 });
 
 // Pour y accéder, port 19080
