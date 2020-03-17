@@ -339,6 +339,139 @@ app.get('/photos/:id', function (req, res) {
     });
 });
 
+app.get("/parties", function (req, res) {
+    let page = req.param('page');
+    if (typeof page === 'undefined' || page <= 0) page = 1;
+    let debutLimit = (page - 1) * 10;
+    let queryParties = `SELECT * FROM partie limit ${debutLimit}, 10`;
+
+    let count = 0;
+    db.query(queryParties, (errParties, resultParties) => {
+        if (errParties) console.log(errParties);
+        else {
+            count = resultParties.length;
+
+            let pageMax = Math.ceil(count / 10);
+            if (page > pageMax) page = pageMax;
+
+            let next = parseInt(page) + 1;
+            if (next > pageMax) next = pageMax;
+
+            let prev = page - 1;
+            if (prev < 1) prev = 1;
+
+            resultParties.forEach(function (p, index) {
+                resultParties[index] = JSON.parse(JSON.stringify({
+                    parties: p,
+                    links: { self: { href: "/parties/" + p.idPartie } }
+                }));
+            });
+            res.json({
+                "type": "collection",
+                "count": count,
+                "size": 10,
+                "links": {
+                    "next": {
+                        "href": "/parties/?page=" + next
+                    },
+                    "prev": {
+                        "href": "/parties/?page=" + prev
+                    },
+                    "last": {
+                        "href": "/parties/?page=" + pageMax
+                    },
+                    "first": {
+                        "href": "/parties/?page=1"
+                    },
+                },
+                "parties": resultParties
+            });
+        }
+    });
+});
+
+app.get('/parties/:id', function (req, res) {
+
+    let queryPartiesId = `SELECT * FROM partie WHERE idPartie = ${req.params.id}`;
+
+    db.query(queryPartiesId, (errPartieId, resultPartieId) => {
+        if (errPartieId) {
+            let erreur = {
+                "type": "error",
+                "error": 500,
+                "message": err
+            };
+        } else if (resultPartieId == "") {
+            let erreur = {
+                "type": "error",
+                "error": 404,
+                "message": req.params.id + " n'est pas valide"
+            };
+            JSON.stringify(erreur);
+            res.send(erreur);
+        } else {
+            let querySerieId = `SELECT * FROM serie WHERE idSerie = ${resultPartieId[0].refSerie}`;
+            db.query(querySerieId, (errSerieId, resultSerieId) => {
+                if (errSerieId) {
+                    let erreur = {
+                        "type": "error",
+                        "error": 500,
+                        "message": err2
+                    };
+                    JSON.stringify(erreur);
+                    res.send(erreur);
+                } else if (resultSerieId === "") {
+                    let erreur = {
+                        "type": "error",
+                        "error": 404,
+                        "message": req.params.id + " isn't a valid id"
+                    };
+                    JSON.stringify(erreur);
+                    res.send(erreur);
+                } else {
+                    let queryJoueurId = `SELECT * FROM joueur WHERE idJoueur = ${resultPartieId[0].refJoueur}`;
+                    db.query(queryJoueurId, (errJoueurId, resultJoueurId) => {
+                        if (errJoueurId) {
+                            let erreur = {
+                                "type": "error",
+                                "error": 500,
+                                "message": err2
+                            };
+                            JSON.stringify(erreur);
+                            res.send(erreur);
+                        } else if (resultJoueurId === "") {
+                            let erreur = {
+                                "type": "error",
+                                "error": 404,
+                                "message": req.params.id + " isn't a valid id"
+                            };
+                            JSON.stringify(erreur);
+                            res.send(erreur);
+                        } else {
+                            res.json({
+                                "type": "ressource",
+                                "links": {
+                                    "self": "/parties/" + req.params.id,
+                                    "joueur" : "/joueurs/" + resultPartieId[0].refJoueur,
+                                    "serie" : "/series/" + resultPartieId[0].refSerie
+                                },
+                                "partie": {
+                                    "id": resultPartieId[0].idPartie,
+                                    "created_at": resultPartieId[0].created_at,
+                                    "statut": resultPartieId[0].statut,
+                                    "score": resultPartieId[0].score,
+                                    "serie": resultSerieId,
+                                    "joueur": resultJoueurId,
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        };
+    });
+});
+
 // POST
 
 app.post("/series", (req, res) => {
@@ -367,7 +500,7 @@ app.post("/photos", (req, res) => {
 
 app.post("/parties", (req, res) => {
     let token = null;
-    if(req.headers['x-lbs-token'] != null) token = req.headers['x-lbs-token'];
+    if(req.headers['x-quizz-token'] != null) token = req.headers['x-quizz-token'];
 
     if (token != null) {
         let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
