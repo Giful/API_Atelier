@@ -342,7 +342,7 @@ app.get('/photos/:id', function (req, res) {
 // POST
 
 app.post("/serie", (req, res) => {
-    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ')
+    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
     db.query(`INSERT INTO serie (ville, mapRef, dist, created_at, updated_at) VALUES ("${req.body.ville}","${req.body.mapRef}","${req.body.dist}","${dateAct}","${dateAct}")`, (err, result) => {
         if (err) {
             console.error(err);
@@ -350,11 +350,11 @@ app.post("/serie", (req, res) => {
         } else {
             res.status(201).json(req.body);
         }
-    })
-})
+    });
+});
 
 app.post("/photo", (req, res) => {
-    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ')
+    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
     db.query(`INSERT INTO photo (refSerie, descr, position, url, created_at, updated_at) VALUES ("${req.body.refSerie}","${req.body.descr}","${req.body.position}","${req.body.url}","${dateAct}","${dateAct}")`, (err, result) => {
         if (err) {
             console.error(err);
@@ -362,8 +362,25 @@ app.post("/photo", (req, res) => {
         } else {
             res.status(201).json(req.body);
         }
-    })
-})
+    });
+});
+
+app.post("/parties", (req, res) => {
+    let token = null;
+    if(req.headers['x-lbs-token'] != null) token = req.headers['x-lbs-token'];
+
+    if (token != null) {
+        let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
+        db.query(`INSERT INTO partie (token, nb_photos, statut, refJoueur, refSerie, created_at, updated_at) VALUES ("${token}","${req.body.nb_photos}","${req.body.statut}","${req.body.refJoueur}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send(JSON.stringify(err));
+            } else {
+                res.status(201).json(req.body);
+            }
+        });
+    }
+});
 
 // Les autres méthodes ne sont pas allowed
 
