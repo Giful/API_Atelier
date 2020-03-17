@@ -343,7 +343,6 @@ app.get("/parties", function (req, res) {
     let page = req.param('page');
     if (typeof page === 'undefined' || page <= 0) page = 1;
     let debutLimit = (page - 1) * 10;
-
     let queryParties = `SELECT * FROM partie limit ${debutLimit}, 10`;
 
     let count = 0;
@@ -452,7 +451,9 @@ app.get('/parties/:id', function (req, res) {
                             res.json({
                                 "type": "ressource",
                                 "links": {
-                                    "self": "/parties/" + req.params.id
+                                    "self": "/parties/" + req.params.id,
+                                    "joueur" : "/joueurs/" + resultPartieId[0].refJoueur,
+                                    "serie" : "/series/" + resultPartieId[0].refSerie
                                 },
                                 "partie": {
                                     "id": resultPartieId[0].idPartie,
@@ -460,13 +461,7 @@ app.get('/parties/:id', function (req, res) {
                                     "statut": resultPartieId[0].statut,
                                     "score": resultPartieId[0].score,
                                     "serie": resultSerieId,
-                                    "linkSerie": {
-                                        "selfSerie" : "/series/" + resultPartieId[0].refSerie
-                                    },
                                     "joueur": resultJoueurId,
-                                    "linkJoueur": {
-                                        "joueur" : "/joueurs/" + resultPartieId[0].refJoueur
-                                    },
                                 }
                             });
                         }
@@ -476,6 +471,34 @@ app.get('/parties/:id', function (req, res) {
         };
     });
 });
+
+
+
+// POST
+
+app.post("/serie", (req, res) => {
+    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ')
+    db.query(`INSERT INTO serie (ville, mapRef, dist, created_at, updated_at) VALUES ("${req.body.ville}","${req.body.mapRef}","${req.body.dist}","${dateAct}","${dateAct}")`, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send(JSON.stringify(err));
+        } else {
+            res.status(201).json(req.body);
+        }
+    })
+})
+
+app.post("/photo", (req, res) => {
+    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ')
+    db.query(`INSERT INTO photo (refSerie, descr, position, url, created_at, updated_at) VALUES ("${req.body.refSerie}","${req.body.descr}","${req.body.position}","${req.body.url}","${dateAct}","${dateAct}")`, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send(JSON.stringify(err));
+        } else {
+            res.status(201).json(req.body);
+        }
+    })
+})
 
         // Les autres méthodes ne sont pas allowed
 
