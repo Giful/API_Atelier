@@ -190,7 +190,7 @@ app.get('/series', function (req, res) {
 });
 
 app.get('/series/:id', function (req, res) {
-    let querySerieId = `SELECT * FROM serie WHERE id_serie = ${req.params.id}`;
+    let querySerieId = `SELECT * FROM serie WHERE idSerie = ${req.params.id}`;
 
     db.query(querySerieId, (errSerieId, resultSerieId) => {
         if (errSerieId) {
@@ -211,7 +211,7 @@ app.get('/series/:id', function (req, res) {
             res.send(erreur);
         }
         else {
-            let queryPhotos = `SELECT * FROM photo WHERE id_serie = ${req.params.id}`;
+            let queryPhotos = `SELECT * FROM photo WHERE idSerie = ${req.params.id}`;
 
             db.query(queryPhotos, (errPhotos, resultPhotos) => {
                 if (errPhotos) {
@@ -236,7 +236,7 @@ app.get('/series/:id', function (req, res) {
                     resultPhotos.forEach(function (p, index) {
                         resultPhotos[index] = JSON.parse(JSON.stringify({
                             photo: p,
-                            links: {self: {href: "/photos/" + p.id_photo}}
+                            links: {self: {href: "/photos/" + p.idPhoto}}
                         }));
                     });
 
@@ -266,7 +266,7 @@ app.get('/series/:id', function (req, res) {
 });
 
 app.get('/series/:id/photos', function (req, res) {
-    let queryPhotos = `SELECT * FROM photo WHERE id_serie = ${req.params.id}`;
+    let queryPhotos = `SELECT * FROM photo WHERE idSerie = ${req.params.id}`;
 
     db.query(queryPhotos, (errPhotos, resultPhotos) => {
         if (errPhotos) {
@@ -291,7 +291,7 @@ app.get('/series/:id/photos', function (req, res) {
             resultPhotos.forEach(function (p, index) {
                 resultPhotos[index] = JSON.parse(JSON.stringify({
                     photo: p,
-                    links: {self: {href: "/photos/" + p.id_photo}}
+                    links: {self: {href: "/photos/" + p.idPhoto}}
                 }));
             });
 
