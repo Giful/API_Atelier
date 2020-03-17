@@ -177,47 +177,6 @@ app.get('/series/:id', function (req, res) {
                     });
                 }
             });
-
-
-
-            count = resultSeries.length;
-
-            let pageMax = Math.ceil(count / 10);
-            if (page > pageMax) page = pageMax;
-
-            let next = parseInt(page) + 1;
-            if (next > pageMax) next = pageMax;
-
-            let prev = page - 1;
-            if (prev < 1) prev = 1;
-
-            resultSeries.forEach(function (s, index) {
-                resultSeries[index] = JSON.parse(JSON.stringify({
-                    serie: s,
-                    links: {self: {href: "/series/" + s.id_serie}}
-                }));
-            });
-
-            res.json({
-                "type": "collection",
-                "count": count,
-                "size": 10,
-                "links": {
-                    "next": {
-                        "href": "/series/?page=" + next
-                    },
-                    "prev": {
-                        "href": "/series/?page=" + prev
-                    },
-                    "last": {
-                        "href": "/series/?page=" + pageMax
-                    },
-                    "first": {
-                        "href": "/series/?page=1"
-                    },
-                },
-                "series": resultSeries
-            });
         }
     });
 });
