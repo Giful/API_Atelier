@@ -117,7 +117,12 @@ app.get("/joueurs/:id", function(req, res) {
                 "links": {
                     "self": "/joueurs/" + req.params.id 
                 },
-                "joueur": result
+                "joueur": {
+                    "id": result[0].idJoueur,
+                    "created_at" : result[0].created_at,
+                    "mail" : result[0].mail,
+                    "nom" : result[0].nom,
+                }
             });
         }
     });
@@ -140,14 +145,6 @@ app.get('/series', function (req, res) {
             };
             JSON.stringify(erreur);
             res.send(erreur);
-        } else if(resultSeries == "") {
-            let erreur = {
-                "type": "error",
-                "error": 404,
-                "message": "Pas de données"
-            };
-            JSON.stringify(erreur);
-            res.send(erreur);
         }
         else {
             count = resultSeries.length;
@@ -164,7 +161,7 @@ app.get('/series', function (req, res) {
             resultSeries.forEach(function (s, index) {
                 resultSeries[index] = JSON.parse(JSON.stringify({
                     serie: s,
-                    links: {self: {href: "/series/" + s.id_serie}}
+                    links: {self: {href: "/series/" + s.idSerie}}
                 }));
             });
 
@@ -174,19 +171,94 @@ app.get('/series', function (req, res) {
                 "size": 10,
                 "links": {
                     "next": {
-                        "href": "/commands/?page=" + next
+                        "href": "/series/?page=" + next
                     },
                     "prev": {
-                        "href": "/commands/?page=" + prev
+                        "href": "/series/?page=" + prev
                     },
                     "last": {
-                        "href": "/commands/?page=" + pageMax
+                        "href": "/series/?page=" + pageMax
                     },
                     "first": {
-                        "href": "/commands/?page=1"
+                        "href": "/series/?page=1"
                     },
                 },
                 "series": resultSeries
+            });
+        }
+    });
+});
+
+app.get('/series/:id', function (req, res) {
+    let querySerieId = `SELECT * FROM serie WHERE id_serie = ${req.params.id}`;
+
+    db.query(querySerieId, (errSerieId, resultSerieId) => {
+        if (errSerieId) {
+            let erreur = {
+                "type": "error",
+                "error": 500,
+                "message": errSerieId
+            };
+            JSON.stringify(erreur);
+            res.send(erreur);
+        } else if(resultSerieId == "") {
+            let erreur = {
+                "type": "error",
+                "error": 404,
+                "message": "L'id " + req.params.id + " n'existe pas"
+            };
+            JSON.stringify(erreur);
+            res.send(erreur);
+        }
+        else {
+            let queryPhotos = `SELECT * FROM photo WHERE id_serie = ${req.params.id}`;
+
+            db.query(queryPhotos, (errPhotos, resultPhotos) => {
+                if (errPhotos) {
+                    let erreur = {
+                        "type": "error",
+                        "error": 500,
+                        "message": errPhotos
+                    };
+                    JSON.stringify(erreur);
+                    res.send(erreur);
+                }
+                else if(resultPhotos == "") {
+                    let erreur = {
+                        "type": "error",
+                        "error": 404,
+                        "message": "L'id " + req.params.id + " n'existe pas"
+                    };
+                    JSON.stringify(erreur);
+                    res.send(erreur);
+                }
+                else {
+                    resultPhotos.forEach(function (p, index) {
+                        resultPhotos[index] = JSON.parse(JSON.stringify({
+                            photo: p,
+                            links: {self: {href: "/photos/" + p.id_photo}}
+                        }));
+                    });
+
+                    res.json({
+                        "type": "resource",
+                        "links": {
+                            "self": {
+                                "href": "/series/" + req.params.id
+                            },
+                            "photos": {
+                                "href": "/series/" + req.params.id + "/photos/"
+                            }
+                        },
+                        "series": {
+                            "idSerie": resultSerieId[0].idSerie,
+                            "ville": resultSerieId[0].ville,
+                            "mapRef": resultSerieId[0].mapRef,
+                            "dist": resultSerieId[0].dist,
+                            "photos": resultPhotos
+                        }
+                    });
+                }
             });
         }
     });
