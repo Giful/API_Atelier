@@ -172,9 +172,50 @@ app.get('/series/:id', function (req, res) {
                             "ville": resultSerieId[0].ville,
                             "mapRef": resultSerieId[0].mapRef,
                             "dist": resultSerieId[0].dist,
+                            "created_at": resultSerieId[0].created_at,
                             "photos": resultPhotos
                         }
                     });
+                }
+            });
+        }
+    });
+});
+
+app.get('/series/:id/photos', function (req, res) {
+    let queryPhotos = `SELECT * FROM photo WHERE id_serie = ${req.params.id}`;
+
+    db.query(queryPhotos, (errPhotos, resultPhotos) => {
+        if (errPhotos) {
+            let erreur = {
+                "type": "error",
+                "error": 500,
+                "message": errPhotos
+            };
+            JSON.stringify(erreur);
+            res.send(erreur);
+        }
+        else if(resultPhotos == "") {
+            let erreur = {
+                "type": "error",
+                "error": 404,
+                "message": "L'id " + req.params.id + " n'existe pas"
+            };
+            JSON.stringify(erreur);
+            res.send(erreur);
+        }
+        else {
+            resultPhotos.forEach(function (p, index) {
+                resultPhotos[index] = JSON.parse(JSON.stringify({
+                    photo: p,
+                    links: {self: {href: "/photos/" + p.id_photo}}
+                }));
+            });
+
+            res.json({
+                "type": "resource",
+                "series": {
+                    "photos": resultPhotos
                 }
             });
         }
