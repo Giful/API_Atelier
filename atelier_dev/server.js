@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
     res.send("Atelier API\n");
 });
 
-app.get("/joueurs", (req, res) => {
+app.get("/joueurs", (req, res) => {
 
     let page = req.param('page');
     if (typeof page === 'undefined' || page <= 0) page = 1;
@@ -47,7 +47,7 @@ app.get("/joueurs", (req, res) => {
 
     let count = 0;
     db.query(queryJoueurs, (errJoueurs, resultJoueurs) => {
-        if(errJoueurs) console.log(errJoueurs);
+        if (errJoueurs) console.log(errJoueurs);
         else {
             count = resultJoueurs.length;
 
@@ -60,10 +60,10 @@ app.get("/joueurs", (req, res) => {
             let prev = page - 1;
             if (prev < 1) prev = 1;
 
-            resultJoueurs.forEach(function (j , index) {
+            resultJoueurs.forEach(function (j, index) {
                 resultJoueurs[index] = JSON.parse(JSON.stringify({
                     joueur: j,
-                    links: {self: {href:"/joueurs/" + j.idJoueur}}
+                    links: { self: { href: "/joueurs/" + j.idJoueur } }
                 }));
             });
 
@@ -91,37 +91,37 @@ app.get("/joueurs", (req, res) => {
     });
 });
 
-app.get("/joueurs/:id", function(req, res) {
+app.get("/joueurs/:id", function (req, res) {
 
-    let idJ = req.params.id;
-    let queryJoueurById = `SELECT * from joueur WHERE idJoueur = ${idJ}`;
 
-    db.query(queryJoueurById, (err, result) => {
-        if(err) {
+    let queryJoueurById = `SELECT * FROM joueur WHERE idJoueur = ${req.params.id}`;
+
+    db.query(queryJoueurById, (errJoueurId, resultJoueurId) => {
+        if (errJoueurId) {
             let erreur = {
                 "type": "error",
                 "error": 500,
                 "message": err
             };
-        } else if(result == "") {
+        } else if (resultJoueurId == "") {
             let erreur = {
                 "type": "error",
                 "error": 404,
-                "message": req.params.id + " n'est pas valide" 
+                "message": req.params.id + " n'est pas valide"
             };
             JSON.stringify(erreur);
             res.send(erreur);
-        }else {
+        } else {
             res.json({
-                "type" : "ressource",
+                "type": "ressource",
                 "links": {
-                    "self": "/joueurs/" + req.params.id 
+                    "self": "/joueurs/" + req.params.id
                 },
                 "joueur": {
-                    "id": result[0].idJoueur,
-                    "created_at" : result[0].created_at,
-                    "mail" : result[0].mail,
-                    "nom" : result[0].nom,
+                    "id": resultJoueurId[0].idJoueur,
+                    "created_at": resultJoueurId[0].created_at,
+                    "mail": resultJoueurId[0].mail,
+                    "nom": resultJoueurId[0].nom,
                 }
             });
         }
@@ -161,7 +161,7 @@ app.get('/series', function (req, res) {
             resultSeries.forEach(function (s, index) {
                 resultSeries[index] = JSON.parse(JSON.stringify({
                     serie: s,
-                    links: {self: {href: "/series/" + s.idSerie}}
+                    links: { self: { href: "/series/" + s.idSerie } }
                 }));
             });
 
@@ -201,7 +201,7 @@ app.get('/series/:id', function (req, res) {
             };
             JSON.stringify(erreur);
             res.send(erreur);
-        } else if(resultSerieId == "") {
+        } else if (resultSerieId == "") {
             let erreur = {
                 "type": "error",
                 "error": 404,
@@ -211,7 +211,7 @@ app.get('/series/:id', function (req, res) {
             res.send(erreur);
         }
         else {
-            let queryPhotos = `SELECT * FROM photo WHERE idSerie = ${req.params.id}`;
+            let queryPhotos = `SELECT * FROM photo WHERE refSerie = ${req.params.id}`;
 
             db.query(queryPhotos, (errPhotos, resultPhotos) => {
                 if (errPhotos) {
@@ -223,7 +223,7 @@ app.get('/series/:id', function (req, res) {
                     JSON.stringify(erreur);
                     res.send(erreur);
                 }
-                else if(resultPhotos == "") {
+                else if (resultPhotos == "") {
                     let erreur = {
                         "type": "error",
                         "error": 404,
@@ -236,7 +236,7 @@ app.get('/series/:id', function (req, res) {
                     resultPhotos.forEach(function (p, index) {
                         resultPhotos[index] = JSON.parse(JSON.stringify({
                             photo: p,
-                            links: {self: {href: "/photos/" + p.idPhoto}}
+                            links: { self: { href: "/photos/" + p.idPhoto } }
                         }));
                     });
 
@@ -278,7 +278,7 @@ app.get('/series/:id/photos', function (req, res) {
             JSON.stringify(erreur);
             res.send(erreur);
         }
-        else if(resultPhotos == "") {
+        else if (resultPhotos == "") {
             let erreur = {
                 "type": "error",
                 "error": 404,
@@ -291,7 +291,7 @@ app.get('/series/:id/photos', function (req, res) {
             resultPhotos.forEach(function (p, index) {
                 resultPhotos[index] = JSON.parse(JSON.stringify({
                     photo: p,
-                    links: {self: {href: "/photos/" + p.idPhoto}}
+                    links: { self: { href: "/photos/" + p.idPhoto } }
                 }));
             });
 
@@ -316,7 +316,7 @@ app.get('/photos/:id', function (req, res) {
             JSON.stringify(erreur);
             res.send(erreur);
         }
-        else if(resultPhotosId == "") {
+        else if (resultPhotosId == "") {
             let erreur = {
                 "type": "error",
                 "error": 404,
@@ -339,35 +339,173 @@ app.get('/photos/:id', function (req, res) {
     });
 });
 
-// Les autres méthodes ne sont pas allowed
+app.get("/parties", function (req, res) {
+    let page = req.param('page');
+    if (typeof page === 'undefined' || page <= 0) page = 1;
+    let debutLimit = (page - 1) * 10;
 
-app.all("/*", (req, res) => {
-    let erreur = {
-        "type": "error",
-        "error": 400,
-        "message": "BAD REQUEST"
-    }
-    JSON.stringify(erreur)
-    res.send(erreur)
+    let queryParties = `SELECT * FROM partie limit ${debutLimit}, 10`;
+
+    let count = 0;
+    db.query(queryParties, (errParties, resultParties) => {
+        if (errParties) console.log(errParties);
+        else {
+            count = resultParties.length;
+
+            let pageMax = Math.ceil(count / 10);
+            if (page > pageMax) page = pageMax;
+
+            let next = parseInt(page) + 1;
+            if (next > pageMax) next = pageMax;
+
+            let prev = page - 1;
+            if (prev < 1) prev = 1;
+
+            resultParties.forEach(function (p, index) {
+                resultParties[index] = JSON.parse(JSON.stringify({
+                    parties: p,
+                    links: { self: { href: "/parties/" + p.idPartie } }
+                }));
+            });
+            res.json({
+                "type": "collection",
+                "count": count,
+                "size": 10,
+                "links": {
+                    "next": {
+                        "href": "/parties/?page=" + next
+                    },
+                    "prev": {
+                        "href": "/parties/?page=" + prev
+                    },
+                    "last": {
+                        "href": "/parties/?page=" + pageMax
+                    },
+                    "first": {
+                        "href": "/parties/?page=1"
+                    },
+                },
+                "parties": resultParties
+            });
+        }
+    });
 });
 
-app.listen(PORT, HOST);
-console.log(`Atelier API Running on http://${HOST}:${PORT}`);
+app.get('/parties/:id', function (req, res) {
 
-const db = mysql.createConnection({
-    host: "mysql.atelier",
-    user: "atelier_bdd",
-    password: "atelier_bdd",
-    database: "atelier_bdd"
+    let queryPartiesId = `SELECT * FROM partie WHERE idPartie = ${req.params.id}`;
+
+    db.query(queryPartiesId, (errPartieId, resultPartieId) => {
+        if (errPartieId) {
+            let erreur = {
+                "type": "error",
+                "error": 500,
+                "message": err
+            };
+        } else if (resultPartieId == "") {
+            let erreur = {
+                "type": "error",
+                "error": 404,
+                "message": req.params.id + " n'est pas valide"
+            };
+            JSON.stringify(erreur);
+            res.send(erreur);
+        } else {
+            let querySerieId = `SELECT * FROM serie WHERE idSerie = ${resultPartieId[0].refSerie}`;
+            db.query(querySerieId, (errSerieId, resultSerieId) => {
+                if (errSerieId) {
+                    let erreur = {
+                        "type": "error",
+                        "error": 500,
+                        "message": err2
+                    };
+                    JSON.stringify(erreur);
+                    res.send(erreur);
+                } else if (resultSerieId === "") {
+                    let erreur = {
+                        "type": "error",
+                        "error": 404,
+                        "message": req.params.id + " isn't a valid id"
+                    };
+                    JSON.stringify(erreur);
+                    res.send(erreur);
+                } else {
+                    let queryJoueurId = `SELECT * FROM joueur WHERE idJoueur = ${resultPartieId[0].refJoueur}`;
+                    db.query(queryJoueurId, (errJoueurId, resultJoueurId) => {
+                        if (errJoueurId) {
+                            let erreur = {
+                                "type": "error",
+                                "error": 500,
+                                "message": err2
+                            };
+                            JSON.stringify(erreur);
+                            res.send(erreur);
+                        } else if (resultJoueurId === "") {
+                            let erreur = {
+                                "type": "error",
+                                "error": 404,
+                                "message": req.params.id + " isn't a valid id"
+                            };
+                            JSON.stringify(erreur);
+                            res.send(erreur);
+                        } else {
+                            res.json({
+                                "type": "ressource",
+                                "links": {
+                                    "self": "/parties/" + req.params.id
+                                },
+                                "partie": {
+                                    "id": resultPartieId[0].idPartie,
+                                    "created_at": resultPartieId[0].created_at,
+                                    "statut": resultPartieId[0].statut,
+                                    "score": resultPartieId[0].score,
+                                    "serie": resultSerieId,
+                                    "linkSerie": {
+                                        "selfSerie" : "/series/" + resultPartieId[0].refSerie
+                                    },
+                                    "joueur": resultJoueurId,
+                                    "linkJoueur": {
+                                        "joueur" : "/joueurs/" + resultPartieId[0].refJoueur
+                                    },
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        };
+    });
 });
 
-db.connect(err => {
-    if (err) {
-        console.error(err);
-    }else{
-        console.log("Connected to database");
-    }
-    
-});
+        // Les autres méthodes ne sont pas allowed
+
+        app.all("/*", (req, res) => {
+            let erreur = {
+                "type": "error",
+                "error": 400,
+                "message": "BAD REQUEST"
+            }
+            JSON.stringify(erreur)
+            res.send(erreur)
+        });
+
+        app.listen(PORT, HOST);
+        console.log(`Atelier API Running on http://${HOST}:${PORT}`);
+
+        const db = mysql.createConnection({
+            host: "mysql.atelier",
+            user: "atelier_bdd",
+            password: "atelier_bdd",
+            database: "atelier_bdd"
+        });
+
+        db.connect(err => {
+            if (err) {
+                console.error(err);
+            } else {
+                console.log("Connected to database");
+            }
+
+        });
 
 // Pour y accéder, port 19080
