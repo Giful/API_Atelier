@@ -108,7 +108,7 @@ app.get("/joueurs/:id", function(req, res) {
             let erreur = {
                 "type": "error",
                 "error": 404,
-                "message": req.params.id + " n'est pas valide" 
+                "message": req.params.id + " n'existe pas" 
             };
             JSON.stringify(erreur);
             res.send(erreur);
@@ -406,7 +406,7 @@ app.get('/parties/:id', function (req, res) {
             let erreur = {
                 "type": "error",
                 "error": 404,
-                "message": req.params.id + " n'est pas valide"
+                "message": req.params.id + " n'existe pas"
             };
             JSON.stringify(erreur);
             res.send(erreur);
@@ -425,7 +425,7 @@ app.get('/parties/:id', function (req, res) {
                     let erreur = {
                         "type": "error",
                         "error": 404,
-                        "message": req.params.id + " isn't a valid id"
+                        "message": req.params.id + " n'existe pas"
                     };
                     JSON.stringify(erreur);
                     res.send(erreur);
@@ -444,7 +444,7 @@ app.get('/parties/:id', function (req, res) {
                             let erreur = {
                                 "type": "error",
                                 "error": 404,
-                                "message": req.params.id + " isn't a valid id"
+                                "message": req.params.id + " n'existe pas"
                             };
                             JSON.stringify(erreur);
                             res.send(erreur);
@@ -517,7 +517,7 @@ app.post("/joueur", (req,res) => {
 
 app.post("/parties", (req, res) => {
     let token = null;
-    if(req.headers['x-quizz-token'] != null) token = req.headers['x-quizz-token'];
+    if(req.headers['x-quizz-token'] != null)  token = req.headers['x-quizz-token'];
     if (token != null) {
         let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
         db.query(`INSERT INTO partie (token, nb_photos, statut, refJoueur, refSerie, created_at, updated_at) VALUES ("${token}","${req.body.nb_photos}","${req.body.statut}","${req.body.refJoueur}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
