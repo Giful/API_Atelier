@@ -40,10 +40,89 @@ app.get("/", (req, res) => {
 app.get("/joueurs", (req, res) => {
 
     let page = req.param('page');
-    let queryJoueurs = `Select * from joueurs`;
+    if (typeof page === 'undefined' || page <= 0) page = 1;
+    let debutLimit = (page - 1) * 10;
 
-    res.send("slt");
-})
+    let queryJoueurs = `SELECT * FROM joueur limit ${debutLimit}, 10`;
+
+    let count = 0;
+    db.query(queryJoueurs, (errJoueurs, resultJoueurs) => {
+        if(errJoueurs) console.log(errJoueurs);
+        else {
+            count = resultJoueurs.length;
+
+            let pageMax = Math.ceil(count / 10);
+            if (page > pageMax) page = pageMax;
+
+            let next = parseInt(page) + 1;
+            if (next > pageMax) next = pageMax;
+
+            let prev = page - 1;
+            if (prev < 1) prev = 1;
+
+            resultJoueurs.forEach(function (j , index) {
+                resultJoueurs[index] = JSON.parse(JSON.stringify({
+                    joueur: j,
+                    links: {self: {href:"/joueurs/" + j.idJoueur}}
+                }));
+            });
+
+            res.json({
+                "type": "collection",
+                "count": count,
+                "size": 10,
+                "links": {
+                    "next": {
+                        "href": "/joueurs/?page=" + next
+                    },
+                    "prev": {
+                        "href": "/joueurs/?page=" + prev
+                    },
+                    "last": {
+                        "href": "/joueurs/?page=" + pageMax
+                    },
+                    "first": {
+                        "href": "/joueurs/?page=1"
+                    },
+                },
+                "joueurs": resultJoueurs
+            });
+        }
+    });
+});
+
+app.get("/joueurs/:id", function(req, res) {
+
+    let idJ = req.params.id;
+    let queryJoueurById = `SELECT * from joueur WHERE idJoueur = ${idJ}`;
+
+    db.query(queryJoueurById, (err, result) => {
+        if(err) {
+            let erreur = {
+                "type": "error",
+                "error": 500,
+                "message": err
+            };
+        } else if(result == "") {
+            let erreur = {
+                "type": "error",
+                "error": 404,
+                "message": req.params.id + " n'est pas valide" 
+            };
+            JSON.stringify(erreur);
+            res.send(erreur);
+        }else {
+            res.json({
+                "type" : "ressource",
+                "links": {
+                    "self": "/joueurs/" + req.params.id 
+                },
+                "joueur": result
+            });
+        }
+    });
+});
+
 app.get('/series', function (req, res) {
     let page = req.param('page');
     if (typeof page === 'undefined' || page <= 0) page = 1;
