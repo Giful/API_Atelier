@@ -21,6 +21,23 @@ services:
     links:
       - mysql.atelier:dbcom
 
+  api.mobile:
+    image: node
+    environment:
+      - NODE_ENV=dev
+      - VHOST_HOSTNAME=api.mobile.local
+    ports:
+      - "19180:8080"
+    volumes:
+      - ./mobile_dev:/app/mobile_api
+    working_dir: /app/mobile_api
+    command: npm run dev
+    networks:
+      - atelier.net
+    links:
+      - mysql.atelier:dbcom
+
+
   #############################
   # mysql atelier  + phpmyadmin
   #############################

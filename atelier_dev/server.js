@@ -42,54 +42,61 @@ app.get("/joueurs", (req, res) => {
 
     let page = req.param('page');
     if (typeof page === 'undefined' || page <= 0) page = 1;
-    let debutLimit = (page - 1) * 10;
 
-    let queryJoueurs = `SELECT * FROM joueur limit ${debutLimit}, 10`;
+
+
+    let countJoueurs = `SELECT * FROM joueur`;
 
     let count = 0;
-    db.query(queryJoueurs, (errJoueurs, resultJoueurs) => {
-        if (errJoueurs) console.log(errJoueurs);
+    db.query(countJoueurs, (err, result) => {
+        if (err) console.log(err);
         else {
-            count = resultJoueurs.length;
+            count = result.length
 
             let pageMax = Math.ceil(count / 10);
             if (page > pageMax) page = pageMax;
+            let debutLimit = (page - 1) * 10;
 
-            let next = parseInt(page) + 1;
-            if (next > pageMax) next = pageMax;
+            let queryJoueurs = `SELECT * FROM joueur limit ${debutLimit}, 10`;
+            db.query(queryJoueurs, (errJoueurs, resultJoueurs) => {
+                if (errJoueurs) console.log(errJoueurs);
+                else {
+                    let next = parseInt(page) + 1;
+                    if (next > pageMax) next = pageMax;
 
-            let prev = page - 1;
-            if (prev < 1) prev = 1;
+                    let prev = page - 1;
+                    if (prev < 1) prev = 1;
 
-            resultJoueurs.forEach(function (j, index) {
-                resultJoueurs[index] = JSON.parse(JSON.stringify({
-                    joueur: j,
-                    links: { self: { href: "/joueurs/" + j.idJoueur } }
-                }));
-            });
-
-            res.json({
-                "type": "collection",
-                "count": count,
-                "size": 10,
-                "links": {
-                    "next": {
-                        "href": "/joueurs/?page=" + next
-                    },
-                    "prev": {
-                        "href": "/joueurs/?page=" + prev
-                    },
-                    "last": {
-                        "href": "/joueurs/?page=" + pageMax
-                    },
-                    "first": {
-                        "href": "/joueurs/?page=1"
-                    },
-                },
-                "joueurs": resultJoueurs
+                    resultJoueurs.forEach(function (j, index) {
+                        resultJoueurs[index] = JSON.parse(JSON.stringify({
+                            joueur: j,
+                            links: { self: { href: "/joueurs/" + j.idJoueur } }
+                        }));
+                    });
+                    res.json({
+                        "type": "collection",
+                        "count": count,
+                        "size": 10,
+                        "links": {
+                            "next": {
+                                "href": "/joueurs/?page=" + next
+                            },
+                            "prev": {
+                                "href": "/joueurs/?page=" + prev
+                            },
+                            "last": {
+                                "href": "/joueurs/?page=" + pageMax
+                            },
+                            "first": {
+                                "href": "/joueurs/?page=1"
+                            },
+                        },
+                        "joueurs": resultJoueurs
+                    });
+                }
             });
         }
-    });
+    })
 });
 
 app.get("/joueurs/:id", function (req, res) {
@@ -121,7 +128,7 @@ app.get("/joueurs/:id", function (req, res) {
                     "id": resultjoueurId[0].idJoueur,
                     "created_at": resultjoueurId[0].created_at,
                     "mail": resultjoueurId[0].mail,
-                    "nom": resultjoueurId[0].nom,
+                    "pseudo": resultjoueurId[0].pseudo,
                 }
             });
         }
@@ -137,7 +144,7 @@ app.get("/joueurs/:id/parties", function (req, res) {
     let queryPartiesJoueur = `SELECT nb_photos, score, created_at FROM partie WHERE refJoueur = ${req.params.id} limit ${debutLimit}, 10`;
 
     let count = 0;
-    
+
     db.query(queryPartiesJoueur, (errPartiesJoueur, resultPartiesJoueur) => {
         if (errPartiesJoueur) {
             let erreur = {
@@ -396,49 +403,56 @@ app.get('/photos/:id', function (req, res) {
 app.get("/parties", function (req, res) {
     let page = req.param('page');
     if (typeof page === 'undefined' || page <= 0) page = 1;
-    let debutLimit = (page - 1) * 10;
-    let queryParties = `SELECT * FROM partie limit ${debutLimit}, 10`;
 
+    let countParties = `SELECT * FROM partie`
     let count = 0;
-    db.query(queryParties, (errParties, resultParties) => {
-        if (errParties) console.log(errParties);
+    db.query(countParties, (err, result) => {
+        if (err) console.log(err);
         else {
-            count = resultParties.length;
+            count = result.length;
 
             let pageMax = Math.ceil(count / 10);
             if (page > pageMax) page = pageMax;
+            let debutLimit = (page - 1) * 10;
 
-            let next = parseInt(page) + 1;
-            if (next > pageMax) next = pageMax;
+            let queryParties = `SELECT * FROM partie limit ${debutLimit}, 10`;
+            db.query(queryParties, (errParties, resultParties) => {
+                if (errParties) console.log(errParties);
+                else {
 
-            let prev = page - 1;
-            if (prev < 1) prev = 1;
+                    let next = parseInt(page) + 1;
+                    if (next > pageMax) next = pageMax;
 
-            resultParties.forEach(function (p, index) {
-                resultParties[index] = JSON.parse(JSON.stringify({
-                    parties: p,
-                    links: { self: { href: "/parties/" + p.idPartie } }
-                }));
-            });
-            res.json({
-                "type": "collection",
-                "count": count,
-                "size": 10,
-                "links": {
-                    "next": {
-                        "href": "/parties/?page=" + next
-                    },
-                    "prev": {
-                        "href": "/parties/?page=" + prev
-                    },
-                    "last": {
-                        "href": "/parties/?page=" + pageMax
-                    },
-                    "first": {
-                        "href": "/parties/?page=1"
-                    },
-                },
-                "parties": resultParties
+                    let prev = page - 1;
+                    if (prev < 1) prev = 1;
+
+                    resultParties.forEach(function (p, index) {
+                        resultParties[index] = JSON.parse(JSON.stringify({
+                            partie: p,
+                            links: { self: { href: "/parties/" + p.idPartie } }
+                        }));
+                    });
+                    res.json({
+                        "type": "collection",
+                        "count": count,
+                        "size": 10,
+                        "links": {
+                            "next": {
+                                "href": "/parties/?page=" + next
+                            },
+                            "prev": {
+                                "href": "/parties/?page=" + prev
+                            },
+                            "last": {
+                                "href": "/parties/?page=" + pageMax
+                            },
+                            "first": {
+                                "href": "/parties/?page=1"
+                            },
+                        },
+                        "parties": resultParties
+                    });
+                }
             });
         }
     });
@@ -512,6 +526,7 @@ app.get('/parties/:id', function (req, res) {
                                 "partie": {
                                     "id": resultPartieId[0].idPartie,
                                     "created_at": resultPartieId[0].created_at,
+                                    "nb_photos": resultPartieId[0].nb_photos,
                                     "statut": resultPartieId[0].statut,
                                     "score": resultPartieId[0].score,
                                     "serie": resultSerieId,
@@ -529,6 +544,7 @@ app.get('/parties/:id', function (req, res) {
 // POST
 
 app.post("/series", (req, res) => {
+    //if(!req.body.ville || !req.body.mapRef || !req.body.dist) res.status(400).end("Veuillez entrez les informations suivantes : ville, mapRef et dist");
     let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
     db.query(`INSERT INTO serie (ville, mapRef, dist, created_at, updated_at) VALUES ("${req.body.ville}","${req.body.mapRef}","${req.body.dist}","${dateAct}","${dateAct}")`, (err, result) => {
         if (err) {
