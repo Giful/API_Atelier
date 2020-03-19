@@ -40,7 +40,7 @@ app.get("/", (req, res) => {
 app.get('/series', function (req, res) {
     let token = null;
 
-    if (req.headers['x-quizz-token'] != null) token = req.headers['x-quizz-token'];
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") token = req.headers.authorization.split(' ')[1];
 
     if(token != null) {
         let querySeries = `SELECT * FROM serie order by ville ASC`;
