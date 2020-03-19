@@ -101,7 +101,7 @@ app.post("/joueurs/auth", (req, res) => {
         mail = credentials.split(':')[0]
         password = credentials.split(':')[1]
 
-        db.query(`select mail, password from joueur where idJoueur = "${req.params.id}"`, (err, result) => {
+        db.query(`select mail, password from joueur where mail = "${mail}"`, (err, result) => {
             if (err) {
                 let erreur = {
                     "type": "error",
@@ -114,7 +114,7 @@ app.post("/joueurs/auth", (req, res) => {
                 let erreur = {
                     "type": "error",
                     "error": 404,
-                    "message": req.params.id + " n'existe pas"
+                    "message": mail + " n'existe pas"
                 };
                 JSON.stringify(erreur);
                 res.send(erreur);
