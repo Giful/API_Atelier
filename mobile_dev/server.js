@@ -92,7 +92,7 @@ app.post("/photos", (req, res) => {
     });
 });
 
-app.post("/joueurs/:id/auth", (req, res) => {
+app.post("/joueurs/auth", (req, res) => {
     let mail, password;
 
     if(req.headers.authorization) {
