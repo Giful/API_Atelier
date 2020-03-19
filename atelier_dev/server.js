@@ -568,7 +568,7 @@ app.post("/photos", (req, res) => {
 app.post("/joueur", (req, res) => {
     let pwd = passwordHash.generate(req.body.mdp)
     let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-    db.query(`INSERT INTO joueur (mail,pseudo,password,created_at,updated_at) VALUES ("${req.body.mail}","${req.body.pseudo}","${pwd}","${dateAct}","${dateAct}")`, (err, result) => {
+    db.query(`INSERT INTO joueur (mail,pseudo,password,role,created_at,updated_at) VALUES ("${req.body.mail}","${req.body.pseudo}","${pwd}","u","${dateAct}","${dateAct}")`, (err, result) => {
         if (err) {
             console.error(err);
             res.status(500).send(JSON.stringify(err));
