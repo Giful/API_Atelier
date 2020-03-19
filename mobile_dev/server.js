@@ -3,7 +3,6 @@
 const bodyparser = require('body-parser');
 const express = require("express");
 const mysql = require("mysql");
-const uuid = require("uuid/v1");
 const axios = require('axios');
 const passwordHash = require('password-hash');
 const jwt = require('jsonwebtoken');

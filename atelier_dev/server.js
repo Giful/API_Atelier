@@ -3,7 +3,6 @@
 const bodyparser = require('body-parser');
 const express = require("express");
 const mysql = require("mysql");
-const uuid = require("uuid/v1");
 const axios = require('axios');
 const passwordHash = require('password-hash');
 const jwt = require('jsonwebtoken');
@@ -141,7 +140,7 @@ app.get("/joueurs/:id/parties", function (req, res) {
     if (typeof page === 'undefined' || page <= 0) page = 1;
     let debutLimit = (page - 1) * 10;
 
-    let queryPartiesJoueur = `SELECT nb_photos, score, created_at FROM partie WHERE refJoueur = ${req.params.id} limit ${debutLimit}, 10`;
+    let queryPartiesJoueur = `SELECT idPartie, nb_photos, statut, score, created_at FROM partie WHERE refJoueur = ${req.params.id} limit ${debutLimit}, 10`;
 
     let count = 0;
 
@@ -156,7 +155,7 @@ app.get("/joueurs/:id/parties", function (req, res) {
             let erreur = {
                 "type": "error",
                 "error": 404,
-                "message": req.params.id + " n'existe pas"
+                "message": "L'utilisateur " + req.params.id + " n'existe pas ou n'a pas joué de parties."
             };
             JSON.stringify(erreur);
             res.send(erreur);
@@ -236,9 +235,6 @@ app.get('/series', function (req, res) {
                     },
                     "prev": {
                         "href": "/series/?page=" + prev
-                    },
-                    "last": {
-                        "href": "/series/?page=" + pageMax
                     },
                     "first": {
                         "href": "/series/?page=1"
