@@ -1,6 +1,7 @@
 /apiDoc
 
 /atelier_dev/node_modules
+/mobile_dev/node_modules
 
 /atelier_dev/package-lock.json
 
