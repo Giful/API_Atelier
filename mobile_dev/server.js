@@ -74,30 +74,45 @@ app.get('/series', function (req, res) {
 // POST
 
 app.post("/series", (req, res) => {
-    if(!req.body.ville || !req.body.mapRef || !req.body.dist) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : ville, mapRef et dist"});
-    else {
-        let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-        db.query(`INSERT INTO serie (ville, mapRef, dist, created_at, updated_at) VALUES ("${req.body.ville}","${req.body.mapRef}","${req.body.dist}","${dateAct}","${dateAct}")`, (err, result) => {
-            if (err) {
-                console.error(err);
-                res.status(500).send(JSON.stringify(err));
-            } else {
-                res.status(201).json(req.body);
-            }
-        });
-    }
+    let token = null;
+
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") token = req.headers.authorization.split(' ')[1];
+
+    if(token != null) {
+        if(!req.body.ville || !req.body.mapRef || !req.body.dist) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : ville, mapRef et dist"});
+        else {
+            let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
+            db.query(`INSERT INTO serie (ville, mapRef, dist, created_at, updated_at) VALUES ("${req.body.ville}","${req.body.mapRef}","${req.body.dist}","${dateAct}","${dateAct}")`, (err, result) => {
+                if (err) {
+                    console.error(err);
+                    res.status(500).send(JSON.stringify(err));
+                } else {
+                    res.status(201).json(req.body);
+                }
+            });
+        }
+    } else res.status(400).json({"type": "error","error": 400,"message": "Aucun Bearer Token en paramètre Header"});
 });
 
 app.post("/photos", (req, res) => {
-    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-    db.query(`INSERT INTO photo (refSerie, descr, longitude, latitude, url, created_at, updated_at) VALUES ("${req.body.refSerie}","${req.body.descr}","${req.body.position.longitude}","${req.body.position.latitude}","${req.body.url}","${dateAct}","${dateAct}")`, (err, result) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send(JSON.stringify(err));
-        } else {
-            res.status(201).json(req.body);
+    let token = null;
+
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") token = req.headers.authorization.split(' ')[1];
+
+    if(token != null) {
+        if(!req.body.refSerie || !req.body.descr || !req.body.position.longitude || !req.body.position.latitude || !req.body.url) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : refSerie, descr, position et url"});
+        else {
+            let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
+            db.query(`INSERT INTO photo (refSerie, descr, longitude, latitude, url, created_at, updated_at) VALUES ("${req.body.refSerie}","${req.body.descr}","${req.body.position.longitude}","${req.body.position.latitude}","${req.body.url}","${dateAct}","${dateAct}")`, (err, result) => {
+                if (err) {
+                    console.error(err);
+                    res.status(500).send(JSON.stringify(err));
+                } else {
+                    res.status(201).json(req.body);
+                }
+            });
         }
-    });
+    } else res.status(400).json({"type": "error","error": 400,"message": "Aucun Bearer Token en paramètre Header"});
 });
 
 app.post("/joueurs/auth", (req, res) => {
