@@ -143,4 +143,20 @@ app.all("/*", (req, res) => {
 app.listen(PORT, HOST);
 console.log(`Mobile API Running on http://${HOST}:${PORT}`);
 
+const db = mysql.createConnection({
+    host: "mysql.atelier",
+    user: "atelier_bdd",
+    password: "atelier_bdd",
+    database: "atelier_bdd"
+});
+
+db.connect(err => {
+    if (err) {
+        console.error(err);
+    } else {
+        console.log("Connected to database");
+    }
+
+});
+
 // Pour y accéder, port 19180
