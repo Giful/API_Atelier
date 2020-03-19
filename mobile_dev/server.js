@@ -38,31 +38,37 @@ app.get("/", (req, res) => {
 });
 
 app.get('/series', function (req, res) {
-    let querySeries = `SELECT * FROM serie order by ville ASC`;
+    let token = null;
 
-    db.query(querySeries, (errSeries, resultSeries) => {
-        if (errSeries) {
-            let erreur = {
-                "type": "error",
-                "error": 500,
-                "message": errSeries
-            };
-            JSON.stringify(erreur);
-            res.send(erreur);
-        }
-        else {
-            resultSeries.forEach(function (s, index) {
-                resultSeries[index] = JSON.parse(JSON.stringify({
-                    serie: s
-                }));
-            });
+    if (req.headers['x-quizz-token'] != null) token = req.headers['x-quizz-token'];
 
-            res.json({
-                "type": "collection",
-                "series": resultSeries
-            });
-        }
-    });
+    if(token != null) {
+        let querySeries = `SELECT * FROM serie order by ville ASC`;
+
+        db.query(querySeries, (errSeries, resultSeries) => {
+            if (errSeries) {
+                let erreur = {
+                    "type": "error",
+                    "error": 500,
+                    "message": errSeries
+                };
+                JSON.stringify(erreur);
+                res.send(erreur);
+            }
+            else {
+                resultSeries.forEach(function (s, index) {
+                    resultSeries[index] = JSON.parse(JSON.stringify({
+                        serie: s
+                    }));
+                });
+
+                res.json({
+                    "type": "collection",
+                    "series": resultSeries
+                });
+            }
+        });
+    } else res.status(400).json({"type": "error","error": 400,"message": "Aucun token en paramètre Header 'x-quizz-token'"});
 });
 
 // POST
