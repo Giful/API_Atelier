@@ -119,7 +119,7 @@ app.post("/joueurs/:id/auth", (req, res) => {
                 JSON.stringify(erreur);
                 res.send(erreur);
             } else {
-                if(mail == result[0].mail && bcrypt.compareSync(password, result[0].password)) {
+                if(mail == result[0].mail && passwordHash.verify(password, result[0].password)) {
                     let token = jwt.sign({}, 'privateKeyApi', {algorithm: 'HS256'})
                     res.json({token: token})
                 } else res.status(401).json({"type": "error","error": 401,"message": "Mauvaise adresse mail ou mot de passe"})
