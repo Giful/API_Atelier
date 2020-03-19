@@ -148,7 +148,7 @@ app.post("/joueurs/auth", (req, res) => {
                 } else res.status(401).json({"type": "error","error": 401,"message": "Mauvaise adresse mail ou mot de passe"})
             }
         })
-    } else res.status(401).json({"type": "error","error": 401,"message": "Aucune Authorization Bearer présent dans le Header"})
+    } else res.status(401).json({"type": "error","error": 401,"message": "Aucune Authorization Basic Auth"})
 })
 
 // Les autres méthodes ne sont pas allowed
