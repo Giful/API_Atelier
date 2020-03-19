@@ -578,8 +578,6 @@ app.post("/joueur", (req, res) => {
     })
 });
 
-
-
 app.post("/parties", (req, res) => {
     let token = null;
     if (req.headers['x-quizz-token'] != null) token = req.headers['x-quizz-token'];

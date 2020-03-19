@@ -37,6 +37,97 @@ app.get("/", (req, res) => {
     res.send("Mobile API\n");
 });
 
+app.get('/series', function (req, res) {
+    let querySeries = `SELECT * FROM serie order by ville ASC`;
+
+    db.query(querySeries, (errSeries, resultSeries) => {
+        if (errSeries) {
+            let erreur = {
+                "type": "error",
+                "error": 500,
+                "message": errSeries
+            };
+            JSON.stringify(erreur);
+            res.send(erreur);
+        }
+        else {
+            resultSeries.forEach(function (s, index) {
+                resultSeries[index] = JSON.parse(JSON.stringify({
+                    serie: s
+                }));
+            });
+
+            res.json({
+                "type": "collection",
+                "series": resultSeries
+            });
+        }
+    });
+});
+
+// POST
+
+app.post("/series", (req, res) => {
+    if(!req.body.ville || !req.body.mapRef || !req.body.dist) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : ville, mapRef et dist"});
+    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
+    db.query(`INSERT INTO serie (ville, mapRef, dist, created_at, updated_at) VALUES ("${req.body.ville}","${req.body.mapRef}","${req.body.dist}","${dateAct}","${dateAct}")`, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send(JSON.stringify(err));
+        } else {
+            res.status(201).json(req.body);
+        }
+    });
+});
+
+app.post("/photos", (req, res) => {
+    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
+    db.query(`INSERT INTO photo (refSerie, descr, position, url, created_at, updated_at) VALUES ("${req.body.refSerie}","${req.body.descr}","${req.body.position}","${req.body.url}","${dateAct}","${dateAct}")`, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send(JSON.stringify(err));
+        } else {
+            res.status(201).json(req.body);
+        }
+    });
+});
+
+app.post("/joueurs/:id/auth", (req, res) => {
+    let mail, password;
+
+    if(req.headers.authorization) {
+        const base64Credentials = req.headers.authorization.split(' ')[1]
+        const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii')
+        mail = credentials.split(':')[0]
+        password = credentials.split(':')[1]
+
+        db.query(`select mail, password from joueur where idJoueur = "${req.params.id}"`, (err, result) => {
+            if (err) {
+                let erreur = {
+                    "type": "error",
+                    "error": 500,
+                    "message": err
+                };
+                JSON.stringify(erreur);
+                res.send(erreur);
+            } else if (result.length == 0) {
+                let erreur = {
+                    "type": "error",
+                    "error": 404,
+                    "message": req.params.id + " n'existe pas"
+                };
+                JSON.stringify(erreur);
+                res.send(erreur);
+            } else {
+                if(mail == result[0].mail && bcrypt.compareSync(password, result[0].password)) {
+                    let token = jwt.sign({}, 'privateKeyApi', {algorithm: 'HS256'})
+                    res.json({token: token})
+                } else res.status(401).json({"type": "error","error": 401,"message": "Mauvaise adresse mail ou mot de passe"})
+            }
+        })
+    } else res.status(401).json({"type": "error","error": 401,"message": "Aucune Authorization Bearer présent dans le Header"})
+})
+
 // Les autres méthodes ne sont pas allowed
 
 app.all("/*", (req, res) => {
