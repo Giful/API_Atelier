@@ -2,8 +2,11 @@
 
 /atelier_dev/node_modules
 /mobile_dev/node_modules
+/webapp_dev/node_modules
 
 /atelier_dev/package-lock.json
+/mobile_dev/package-lock.json
+/webapp_dev/package-lock.json
 
 # PhPStorm
 .idea
