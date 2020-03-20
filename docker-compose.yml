@@ -37,6 +37,22 @@ services:
     links:
       - mysql.atelier:dbcom
 
+  api.webapp:
+    image: node
+    environment:
+      - NODE_ENV=dev
+      - VHOST_HOSTNAME=api.webapp.local
+    ports:
+      - "19280:8080"
+    volumes:
+      - ./webapp_dev:/app/webapp_api
+    working_dir: /app/webapp_api
+    command: npm run dev
+    networks:
+      - atelier.net
+    links:
+      - mysql.atelier:dbcom
+
 
   #############################
   # mysql atelier  + phpmyadmin
