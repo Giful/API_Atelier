@@ -122,7 +122,7 @@ app.all("/*", (req, res) => {
 });
 
 app.listen(PORT, HOST);
-console.log(`Mobile API Running on http://${HOST}:${PORT}`);
+console.log(`WebApp API Running on http://${HOST}:${PORT}`);
 
 const db = mysql.createConnection({
     host: "mysql.atelier",
