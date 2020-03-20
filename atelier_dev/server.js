@@ -594,6 +594,42 @@ app.post("/parties", (req, res) => {
     }
 });
 
+app.post("/joueurs/auth", (req, res) => {
+    let mail, password;
+
+    if(req.headers.authorization) {
+        const base64Credentials = req.headers.authorization.split(' ')[1]
+        const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii')
+        mail = credentials.split(':')[0]
+        password = credentials.split(':')[1]
+
+        db.query(`select idJoueur, mail, password from joueur where mail = "${mail}"`, (err, result) => {
+            if (err) {
+                let erreur = {
+                    "type": "error",
+                    "error": 500,
+                    "message": err
+                };
+                JSON.stringify(erreur);
+                res.send(erreur);
+            } else if (result.length == 0) {
+                let erreur = {
+                    "type": "error",
+                    "error": 404,
+                    "message": mail + " n'existe pas"
+                };
+                JSON.stringify(erreur);
+                res.send(erreur);
+            } else {
+                if(mail == result[0].mail && passwordHash.verify(password, result[0].password)) {
+                    let token = jwt.sign({}, 'privateKeyApi', {algorithm: 'HS256'})
+                    res.json({id: result[0].idJoueur, token: token})
+                } else res.status(401).json({"type": "error","error": 401,"message": "Mauvaise adresse mail ou mot de passe"})
+            }
+        })
+    } else res.status(401).json({"type": "error","error": 401,"message": "Aucune Authorization Basic Auth"})
+})
+
 // Les autres méthodes ne sont pas allowed
 
 app.all("/*", (req, res) => {
