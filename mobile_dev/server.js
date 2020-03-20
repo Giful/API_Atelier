@@ -100,10 +100,10 @@ app.post("/photos", (req, res) => {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") token = req.headers.authorization.split(' ')[1];
 
     if(token != null) {
-        if(!req.body.refSerie || !req.body.descr || !req.body.position.longitude || !req.body.position.latitude || !req.body.url) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : refSerie, descr, position et url"});
+        if(!req.body.refSerie || !req.body.descr || !req.body.latitude || !req.body.longitude || !req.body.url) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : refSerie, descr, position et url"});
         else {
             let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-            db.query(`INSERT INTO photo (descr, url, longitude, latitude, refSerie, created_at, updated_at) VALUES ("${req.body.descr}","${req.body.url}","${req.body.position.longitude}","${req.body.position.latitude}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
+            db.query(`INSERT INTO photo (descr, url, latitude, longitude, refSerie, created_at, updated_at) VALUES ("${req.body.descr}","${req.body.url}","${req.body.latitude}","${req.body.longitude}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
                 if (err) {
                     console.error(err);
                     res.status(500).send(JSON.stringify(err));
