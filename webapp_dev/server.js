@@ -143,7 +143,7 @@ app.post("/joueurs/auth", (req, res) => {
             } else {
                 if(mail == result[0].mail && passwordHash.verify(password, result[0].password)) {
                     let token = jwt.sign({}, 'privateKeyApi', {algorithm: 'HS256'})
-                    res.json({token: token, id:result[0].idJoueur})
+                    res.json({token: token, id: result[0].idJoueur})
                 } else res.status(401).json({"type": "error","error": 401,"message": "Mauvaise adresse mail ou mot de passe"})
             }
         })
