@@ -554,7 +554,7 @@ app.post("/series", (req, res) => {
 
 app.post("/photos", (req, res) => {
     let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-    db.query(`INSERT INTO photo (refSerie, descr, position, url, created_at, updated_at) VALUES ("${req.body.refSerie}","${req.body.descr}","${req.body.position}","${req.body.url}","${dateAct}","${dateAct}")`, (err, result) => {
+    db.query(`INSERT INTO photo (refSerie, descr, latitude, longitude, url, created_at, updated_at) VALUES ("${req.body.refSerie}","${req.body.descr}","${req.body.lat}","${req.body.lng}","${req.body.url}","${dateAct}","${dateAct}")`, (err, result) => {
         if (err) {
             console.error(err);
             res.status(500).send(JSON.stringify(err));
