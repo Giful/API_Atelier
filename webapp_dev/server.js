@@ -101,8 +101,7 @@ app.get('/series/:id/photos', function (req, res) {
             else {
                 resultPhotos.forEach(function (p, index) {
                     resultPhotos[index] = JSON.parse(JSON.stringify({
-                        photo: p,
-                        links: { self: { href: "/photos/" + p.idPhoto } }
+                        photo: p
                     }));
                 });
 
