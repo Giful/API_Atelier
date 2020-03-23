@@ -73,6 +73,24 @@ app.get('/series', function (req, res) {
 
 // POST
 
+app.post("/parties", (req, res) => {
+    let token = null;
+
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") token = req.headers.authorization.split(' ')[1];
+    
+    if (token != null) {
+        let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
+        db.query(`INSERT INTO partie (token, nb_photos, statut, refJoueur, refSerie, created_at, updated_at) VALUES ("${token}","${req.body.nb_photos}","${req.body.statut}","${req.body.refJoueur}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send(JSON.stringify(err));
+            } else {
+                res.status(201).json(req.body);
+            }
+        });
+    }
+});
+
 app.post("/joueurs/auth", (req, res) => {
     let mail, password;
 
