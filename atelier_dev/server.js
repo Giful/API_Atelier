@@ -42,8 +42,6 @@ app.get("/joueurs", (req, res) => {
     let page = req.param('page');
     if (typeof page === 'undefined' || page <= 0) page = 1;
 
-
-
     let countJoueurs = `SELECT * FROM joueur`;
 
     let count = 0;

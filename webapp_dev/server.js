@@ -77,7 +77,7 @@ app.get('/series/:id/photos', function (req, res) {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") token = req.headers.authorization.split(' ')[1];
 
     if(token != null) {
-        let queryPhotos = `SELECT * FROM photo WHERE idSerie = ${req.params.id}`;
+        let queryPhotos = `SELECT * FROM photo WHERE refSerie = ${req.params.id}`;
 
         db.query(queryPhotos, (errPhotos, resultPhotos) => {
             if (errPhotos) {
