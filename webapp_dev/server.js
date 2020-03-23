@@ -73,24 +73,6 @@ app.get('/series', function (req, res) {
 
 // POST
 
-app.post("/joueurs", (req, res) => {
-    let pwd = passwordHash.generate(req.body.mdp)
-    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-    db.query(`INSERT INTO joueur (mail,pseudo,password,role,created_at,updated_at) VALUES ("${req.body.mail}","${req.body.pseudo}","${pwd}","u","${dateAct}","${dateAct}")`, (err, result) => {
-        if (err) {
-            let erreur = {
-                "type": "error",
-                "error": 500,
-                "message": err
-            };
-            JSON.stringify(erreur);
-            res.send(erreur);
-        } else {
-            res.status(201).json(req.body)
-        }
-    })
-});
-
 app.post("/parties", (req, res) => {
     let token = null;
 
@@ -112,6 +94,24 @@ app.post("/parties", (req, res) => {
             }
         });
     }
+});
+
+app.post("/joueurs", (req, res) => {
+    let pwd = passwordHash.generate(req.body.mdp)
+    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
+    db.query(`INSERT INTO joueur (mail,pseudo,password,role,created_at,updated_at) VALUES ("${req.body.mail}","${req.body.pseudo}","${pwd}","u","${dateAct}","${dateAct}")`, (err, result) => {
+        if (err) {
+            let erreur = {
+                "type": "error",
+                "error": 500,
+                "message": err
+            };
+            JSON.stringify(erreur);
+            res.send(erreur);
+        } else {
+            res.status(201).json(req.body)
+        }
+    })
 });
 
 app.post("/joueurs/auth", (req, res) => {
@@ -143,7 +143,7 @@ app.post("/joueurs/auth", (req, res) => {
             } else {
                 if(mail == result[0].mail && passwordHash.verify(password, result[0].password)) {
                     let token = jwt.sign({}, 'privateKeyApi', {algorithm: 'HS256'})
-                    res.json({token: token})
+                    res.json({token: token, id:result[0].id})
                 } else res.status(401).json({"type": "error","error": 401,"message": "Mauvaise adresse mail ou mot de passe"})
             }
         })
