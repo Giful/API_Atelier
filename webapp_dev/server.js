@@ -71,6 +71,50 @@ app.get('/series', function (req, res) {
     } else res.status(400).json({"type": "error","error": 400,"message": "Aucun Bearer Token en paramètre Header"});
 });
 
+app.get('/series/:id/photos', function (req, res) {
+    let token = null;
+
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") token = req.headers.authorization.split(' ')[1];
+
+    if(token != null) {
+        let queryPhotos = `SELECT * FROM photo WHERE idSerie = ${req.params.id}`;
+
+        db.query(queryPhotos, (errPhotos, resultPhotos) => {
+            if (errPhotos) {
+                let erreur = {
+                    "type": "error",
+                    "error": 500,
+                    "message": errPhotos
+                };
+                JSON.stringify(erreur);
+                res.send(erreur);
+            }
+            else if (resultPhotos == "") {
+                let erreur = {
+                    "type": "error",
+                    "error": 404,
+                    "message": "L'id " + req.params.id + " n'existe pas"
+                };
+                JSON.stringify(erreur);
+                res.send(erreur);
+            }
+            else {
+                resultPhotos.forEach(function (p, index) {
+                    resultPhotos[index] = JSON.parse(JSON.stringify({
+                        photo: p,
+                        links: { self: { href: "/photos/" + p.idPhoto } }
+                    }));
+                });
+
+                res.json({
+                    "type": "resource",
+                    "photos": resultPhotos
+                });
+            }
+        });
+    } else res.status(400).json({"type": "error","error": 400,"message": "Aucun Bearer Token en paramètre Header"});
+});
+
 // POST
 
 app.post("/parties", (req, res) => {
