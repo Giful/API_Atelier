@@ -123,7 +123,7 @@ app.post("/joueurs/auth", (req, res) => {
         mail = credentials.split(':')[0]
         password = credentials.split(':')[1]
 
-        db.query(`select mail, password from joueur where mail = "${mail}"`, (err, result) => {
+        db.query(`select idJoueur, mail, password from joueur where mail = "${mail}"`, (err, result) => {
             if (err) {
                 let erreur = {
                     "type": "error",
