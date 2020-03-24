@@ -79,7 +79,7 @@ app.post("/series", (req, res) => {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") token = req.headers.authorization.split(' ')[1];
 
     if(token != null) {
-        if(!req.body.ville || !req.body.mapRef || !req.body.dist) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : ville, mapRef et dist"});
+        if(!req.body.ville || !req.body.latitude || !req.body.longitude || !req.body.zoom || !req.body.dist) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : ville, référence de la carte et dist"});
         else {
             let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
             db.query(`INSERT INTO serie (ville, latitude, longitude, zoom, dist, created_at, updated_at) VALUES ("${req.body.ville}","${req.body.mapRef}","${req.body.dist}","${dateAct}","${dateAct}")`, (err, result) => {
