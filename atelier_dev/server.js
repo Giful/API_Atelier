@@ -540,7 +540,7 @@ app.get('/parties/:id', function (req, res) {
 app.post("/series", (req, res) => {
     //if(!req.body.ville || !req.body.mapRef || !req.body.dist) res.status(400).end("Veuillez entrez les informations suivantes : ville, mapRef et dist");
     let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-    db.query(`INSERT INTO serie (ville, mapRef, dist, created_at, updated_at) VALUES ("${req.body.ville}","${req.body.mapRef}","${req.body.dist}","${dateAct}","${dateAct}")`, (err, result) => {
+    db.query(`INSERT INTO serie (ville, latitude,longitude, zoom, dist, created_at, updated_at) VALUES ("${req.body.ville}","${req.body.lat}","${req.body.long}","${req.body.zoom}","${req.body.dist}","${dateAct}","${dateAct}")`, (err, result) => {
         if (err) {
             console.error(err);
             res.status(500).send(JSON.stringify(err));
