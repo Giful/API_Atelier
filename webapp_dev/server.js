@@ -280,8 +280,9 @@ app.post("/parties", (req, res) => {
     if (token != null) {
         if(!req.body.nb_photos || !req.body.statut || !req.body.refJoueur || !req.body.refSerie) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : nb_photos, statut, refJoueur et refSerie"});
         else {
+            let id = uuid();
             let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-            db.query(`INSERT INTO partie (token, nb_photos, statut, refJoueur, refSerie, created_at, updated_at) VALUES ("${token}","${req.body.nb_photos}","${req.body.statut}","${req.body.refJoueur}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
+            db.query(`INSERT INTO partie (id, token, nb_photos, statut, refJoueur, refSerie, created_at, updated_at) VALUES ("${id}","${token}","${req.body.nb_photos}","${req.body.statut}","${req.body.refJoueur}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
                 if (err) {
                     let erreur = {
                         "type": "error",
@@ -291,7 +292,9 @@ app.post("/parties", (req, res) => {
                     JSON.stringify(erreur);
                     res.send(erreur);
                 } else {
-                    res.status(201).json(req.body);
+                    let res = req.body;
+                    res.id = id;
+                    res.status(201).json(res);
                 }
             });
         }
@@ -423,6 +426,37 @@ app.post("/joueurs/auth", (req, res) => {
         })
     } else res.status(401).json({"type": "error","error": 401,"message": "Aucune Authorization Basic Auth"})
 })
+
+// PUT
+
+app.put("/parties/:id", (req, res) => {
+    let token = null;
+
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") token = req.headers.authorization.split(' ')[1];
+
+    if (token != null) {
+
+
+
+        if(!req.body.nb_photos || !req.body.statut || !req.body.refJoueur || !req.body.refSerie) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : nb_photos, statut, refJoueur et refSerie"});
+        else {
+            let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
+            db.query(`INSERT INTO partie (token, nb_photos, statut, refJoueur, refSerie, created_at, updated_at) VALUES ("${token}","${req.body.nb_photos}","${req.body.statut}","${req.body.refJoueur}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
+                if (err) {
+                    let erreur = {
+                        "type": "error",
+                        "error": 500,
+                        "message": err
+                    };
+                    JSON.stringify(erreur);
+                    res.send(erreur);
+                } else {
+                    res.status(201).json(req.body);
+                }
+            });
+        }
+    } else res.status(400).json({"type": "error","error": 400,"message": "Aucune Authorization Bearer Token"});
+});
 
 // Les autres méthodes ne sont pas allowed
 
