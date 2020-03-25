@@ -601,7 +601,7 @@ app.post("/joueurs/auth", (req, res) => {
         mail = credentials.split(':')[0]
         password = credentials.split(':')[1]
 
-        db.query(`select idJoueur, mail, password from joueur where mail = "${mail}"`, (err, result) => {
+        db.query(`select idJoueur, mail, role, password from joueur where mail = "${mail}"`, (err, result) => {
             if (err) {
                 let erreur = {
                     "type": "error",
@@ -621,7 +621,7 @@ app.post("/joueurs/auth", (req, res) => {
             } else {
                 if(mail == result[0].mail && passwordHash.verify(password, result[0].password)) {
                     let token = jwt.sign({}, 'privateKeyApi', {algorithm: 'HS256'})
-                    res.json({id: result[0].idJoueur, token: token})
+                    res.json({id: result[0].idJoueur, token: token, role:result[0].role})
                 } else res.status(401).json({"type": "error","error": 401,"message": "Mauvaise adresse mail ou mot de passe"})
             }
         })
