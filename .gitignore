@@ -1,12 +1,10 @@
 /apiDoc
 
-/atelier_dev/node_modules
-/mobile_dev/node_modules
-/webapp_dev/node_modules
+node_modules/
+package-lock.json
 
-/atelier_dev/package-lock.json
-/mobile_dev/package-lock.json
-/webapp_dev/package-lock.json
+# Visual Studio Code
+.vscode
 
 # PhPStorm
 .idea
