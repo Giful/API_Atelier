@@ -293,9 +293,9 @@ app.post("/parties", (req, res) => {
                     JSON.stringify(erreur);
                     res.send(erreur);
                 } else {
-                    let res = req.body;
-                    res.id = id;
-                    res.status(201).json(res);
+                    let resulat = req.body;
+                    resulat.id = id;
+                    res.status(201).json(resulat);
                 }
             });
         }
@@ -436,7 +436,25 @@ app.put("/parties/:id", (req, res) => {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") token = req.headers.authorization.split(' ')[1];
 
     if (token != null) {
-
+        db.query(`SELECT token FROM partie WHERE idPartie = "${req.params.id}"`, (err, result) => {
+            if (err) {
+                let erreur = {
+                    "type": "error",
+                    "error": 500,
+                    "message": err
+                };
+                JSON.stringify(erreur);
+                res.send(erreur);
+            } else if(result == "") {
+                let erreur = {
+                    "type": "error",
+                    "error": 404,
+                    "message": req.params.id + " isn't a valid id"
+                };
+                JSON.stringify(erreur);
+                res.send(erreur);
+            }
+        });
 
 
         if(!req.body.nb_photos || !req.body.statut || !req.body.refJoueur || !req.body.refSerie) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : nb_photos, statut, refJoueur et refSerie"});
