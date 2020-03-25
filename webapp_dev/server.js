@@ -200,7 +200,7 @@ app.get('/series/:id/photos', function (req, res) {
                 JSON.stringify(erreur);
                 res.send(erreur);
             }
-            else if (resultPhotos == "") {
+            else if (resultPhotos.length == 0) {
                 let erreur = {
                     "type": "error",
                     "error": 404,
@@ -441,12 +441,20 @@ app.put("/parties/:id", (req, res) => {
         if(!req.body.statut || !req.body.score) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : statut et score"});
         else {
             let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-            db.query(`UPDATE partie SET statut = "${req.body.statut}" AND score = "${req.body.score}" WHERE idPartie = "${req.params.id}"`, (err, result) => {
+            db.query(`UPDATE partie SET statut = "${req.body.statut}", score = "${req.body.score}", updated_at = "${dateAct}" WHERE idPartie = "${req.params.id}"`, (err, result) => {
                 if (err) {
                     let erreur = {
                         "type": "error",
                         "error": 500,
                         "message": err
+                    };
+                    JSON.stringify(erreur);
+                    res.send(erreur);
+                } else if (result.length == 0) {
+                    let erreur = {
+                        "type": "error",
+                        "error": 404,
+                        "message": "L'id " + req.params.id + " n'existe pas"
                     };
                     JSON.stringify(erreur);
                     res.send(erreur);
