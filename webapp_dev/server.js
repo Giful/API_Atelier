@@ -432,6 +432,56 @@ app.post("/joueurs/auth", (req, res) => {
 
 // PUT
 
+/**
+ * @api {put} /parties/:id Modifier partie
+ * @apiDescription Requête pour modifier une partie.
+ * @apiName PutPartiesId
+ * @apiGroup WebApp
+ * 
+ * @apiHeader {String} Bearer Token  Token d'authentification du joueur - Authorization (Bearer Token).
+ * @apiHeader {Object} body  Informations de la partie à renseigner en json.
+ * 
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *       "statut": "Terminée",
+ *       "score": 450
+ *     }
+ * 
+ * @apiParam {String} id  ID de la partie.
+ * 
+ * @apiSuccess {String} statut  Statut de la partie.
+ * @apiSuccess {Number} score  Score de la partie.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     {
+ *       "statut": "Terminée",
+ *       "score": 450
+ *     }
+ * 
+ * @apiError 400 Aucune Authorization Bearer Token ou mauvaises informations concernant la partie.
+ * @apiError 404 ID partie introuvable.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Aucune Authorization Bearer Token"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Veuillez entrez les informations suivantes : statut et score"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "404",
+ *       "message": "L'id 'ID de la partie' n'existe pas"
+ *     }
+ */
 app.put("/parties/:id", (req, res) => {
     let token = null;
 
