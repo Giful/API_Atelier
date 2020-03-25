@@ -137,8 +137,8 @@ app.get('/series', function (req, res) {
  * @apiSuccess {Number} photos.photo.idPhoto  ID de la photo.
  * @apiSuccess {String} photos.photo.descr  Description de la photo.
  * @apiSuccess {String} photos.photo.url  Url de la photo.
- * @apiSuccess {Number} photos.photo.latitude  Latitude de la photo.
- * @apiSuccess {Number} photos.photo.longitude  Longitude de la photo.
+ * @apiSuccess {Decimal} photos.photo.latitude  Latitude de la photo.
+ * @apiSuccess {Decimal} photos.photo.longitude  Longitude de la photo.
  * @apiSuccess {Number} photos.photo.refSerie  Référence de la série où se trouve la photo.
  * @apiSuccess {Date} photos.photo.created_at  Date de création de la photo.
  * @apiSuccess {Date} photos.photo.updated_at  Date de modification de la photo.
@@ -356,14 +356,15 @@ app.post("/joueurs", (req, res) => {
 
 /**
  * @api {post} /joueurs/auth Token auth joueur
- * @apiDescription Requête pour récupérer le token d'authentification du joueur.
+ * @apiDescription Requête pour récupérer le token d'authentification et l'ID du joueur.
  * @apiName PostJoueursAuth
  * @apiGroup WebApp
  * 
  * @apiHeader {String} username  Adresse mail du joueur - Authorization (Basic Auth).
  * @apiHeader {String} password  Mot de passe du joueur - Authorization (Basic Auth).
  * 
- * @apiSuccess {String} token  Token d'authentification.
+ * @apiSuccess {String} token  Token d'authentification du joueur.
+ * @apiSuccess {Number} id  ID du joueur.
  * 
  * @apiSuccessExample {json} Success-Response:
  *     {

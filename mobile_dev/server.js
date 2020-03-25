@@ -272,7 +272,7 @@ app.post("/photos", (req, res) => {
  * @apiHeader {String} username  Adresse mail du joueur - Authorization (Basic Auth).
  * @apiHeader {String} password  Mot de passe du joueur - Authorization (Basic Auth).
  * 
- * @apiSuccess {String} token  Token d'authentification.
+ * @apiSuccess {String} token  Token d'authentification du joueur.
  * 
  * @apiSuccessExample {json} Success-Response:
  *     {
