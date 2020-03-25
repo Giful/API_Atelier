@@ -47,15 +47,16 @@ app.get("/", (req, res) => {
  * 
  * @apiSuccess {String} type  Type de la réponse.
  * @apiSuccess {Object} series  Liste des séries.
- * @apiSuccess {Number} series.idSerie  ID de la série.
- * @apiSuccess {String} series.ville  Ville de la série.
- * @apiSuccess {Decimal} series.latitude  Latitude de la ville.
- * @apiSuccess {Decimal} series.longitude  Longitude de la ville.
- * @apiSuccess {Number} series.zoom  Zoom correspondant à l'affichage de la carte.
- * @apiSuccess {Number} series.dist  Distance pour calculer le score.
- * @apiSuccess {Date} series.created_at  Date de création de la série.
- * @apiSuccess {Date} series.updated_at  Date de modification de la série.
- * @apiSuccess {Date} series.deleted_at  Date de suppression de la série.
+ * @apiSuccess {Object} serie  Informations d'une série.
+ * @apiSuccess {Number} series.serie.idSerie  ID de la série.
+ * @apiSuccess {String} series.serie.ville  Ville de la série.
+ * @apiSuccess {Decimal} series.serie.latitude  Latitude de la ville.
+ * @apiSuccess {Decimal} series.serie.longitude  Longitude de la ville.
+ * @apiSuccess {Number} series.serie.zoom  Zoom correspondant à l'affichage de la carte.
+ * @apiSuccess {Number} series.serie.dist  Distance pour calculer le score.
+ * @apiSuccess {Date} series.serie.created_at  Date de création de la série.
+ * @apiSuccess {Date} series.serie.updated_at  Date de modification de la série.
+ * @apiSuccess {Date} series.serie.deleted_at  Date de suppression de la série.
  * 
  * @apiSuccessExample {json} Success-Response:
  *     {
