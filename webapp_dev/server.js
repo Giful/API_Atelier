@@ -248,13 +248,15 @@ app.get('/series/:id/photos', function (req, res) {
  * @apiSuccess {String} statut  Statut de la partie.
  * @apiSuccess {Number} refJoueur  Référence du joueur.
  * @apiSuccess {Number} refSerie  Référence de la série.
+ * @apiSuccess {String} id  ID de la série.
  * 
  * @apiSuccessExample {json} Success-Response:
  *     {
  *       "nb_photos": 10,
  *       "statut": "Créée",
  *       "refJoueur": 1,
- *       "refSerie": 1
+ *       "refSerie": 1,
+ *       "id": "a5d3ac70-6eaa-11ea-a58f-ebf0a4b00e90"
  *     }
  * 
  * @apiError 400 Aucune Authorization Bearer Token ou mauvaises informations concernant la partie.
@@ -436,31 +438,10 @@ app.put("/parties/:id", (req, res) => {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") token = req.headers.authorization.split(' ')[1];
 
     if (token != null) {
-        db.query(`SELECT token FROM partie WHERE idPartie = "${req.params.id}"`, (err, result) => {
-            if (err) {
-                let erreur = {
-                    "type": "error",
-                    "error": 500,
-                    "message": err
-                };
-                JSON.stringify(erreur);
-                res.send(erreur);
-            } else if(result == "") {
-                let erreur = {
-                    "type": "error",
-                    "error": 404,
-                    "message": req.params.id + " isn't a valid id"
-                };
-                JSON.stringify(erreur);
-                res.send(erreur);
-            }
-        });
-
-
-        if(!req.body.nb_photos || !req.body.statut || !req.body.refJoueur || !req.body.refSerie) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : nb_photos, statut, refJoueur et refSerie"});
+        if(!req.body.statut || !req.body.score) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : statut et score"});
         else {
             let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-            db.query(`INSERT INTO partie (token, nb_photos, statut, refJoueur, refSerie, created_at, updated_at) VALUES ("${token}","${req.body.nb_photos}","${req.body.statut}","${req.body.refJoueur}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
+            db.query(`UPDATE partie SET statut = "${req.body.statut}" AND score = "${req.body.score}" WHERE idPartie = "${req.params.id}"`, (err, result) => {
                 if (err) {
                     let erreur = {
                         "type": "error",
