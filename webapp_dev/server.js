@@ -283,7 +283,7 @@ app.post("/parties", (req, res) => {
         else {
             let id = uuid();
             let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-            db.query(`INSERT INTO partie (id, token, nb_photos, statut, refJoueur, refSerie, created_at, updated_at) VALUES ("${id}","${token}","${req.body.nb_photos}","${req.body.statut}","${req.body.refJoueur}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
+            db.query(`INSERT INTO partie (idPartie, token, nb_photos, statut, refJoueur, refSerie, created_at, updated_at) VALUES ("${id}","${token}","${req.body.nb_photos}","${req.body.statut}","${req.body.refJoueur}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
                 if (err) {
                     let erreur = {
                         "type": "error",
