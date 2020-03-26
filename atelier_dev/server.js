@@ -157,7 +157,7 @@ app.get("/joueurs/:id/parties", function (req, res) {
                 if (typeof page === 'undefined' || page <= 0) page = 1;
                 let debutLimit = (page - 1) * 10;
 
-                let queryPartiesJoueur = `SELECT idPartie, nb_photos, statut, score, created_at FROM partie WHERE refJoueur = ${req.params.id} limit ${debutLimit}, 10`;
+                let queryPartiesJoueur = `SELECT * FROM partie WHERE refJoueur = ${req.params.id} limit ${debutLimit}, 10`;
 
                 let count = 0;
 
@@ -633,7 +633,7 @@ app.post("/photos", (req, res) => {
         jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
             if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
             else {
-                if (!req.body.refSerie || !req.body.descr || !req.body.latitude || !req.body.longitude || !req.body.url) res.status(400).json({ "type": "error", "error": 400, "message": "Veuillez entrez les informations suivantes : refSerie, descr, position et url" });
+                if (!req.body.refSerie || !req.body.descr || !req.body.lat || !req.body.lng || !req.body.url) res.status(400).json({ "type": "error", "error": 400, "message": "Veuillez entrez les informations suivantes : refSerie, descr, position et url" });
                 let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
                 db.query(`INSERT INTO photo (refSerie, descr, latitude, longitude, url, created_at, updated_at) VALUES ("${req.body.refSerie}","${req.body.descr}","${req.body.lat}","${req.body.lng}","${req.body.url}","${dateAct}","${dateAct}")`, (err, result) => {
                     if (err) {

@@ -230,13 +230,20 @@ app.post("/series", (req, res) => {
  *       "refSerie": 1
  *     }
  * 
- * @apiError 400 Aucune Authorization Bearer Token ou mauvaises informations concernant la photo.
+ * @apiError 400 Aucune Authorization Bearer Token, mauvais format du token ou mauvaises informations concernant la photo.
  * 
  * @apiErrorExample {json} Error-Response:
  *     {
  *       "type": "error",
  *       "error": "400",
  *       "message": "Aucune Authorization Bearer Token"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Mauvais Token"
  *     }
  * 
  * @apiErrorExample {json} Error-Response:

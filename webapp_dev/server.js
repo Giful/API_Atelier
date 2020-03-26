@@ -229,7 +229,7 @@ app.get('/series/:id/photos', function (req, res) {
     } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
 });
 
-app.get("/joueurs/:id/parties", function (req, res) {
+app.get("/joueurs/:id/parties/cree", function (req, res) {
 
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
         let token = req.headers.authorization.split(' ')[1]
@@ -240,7 +240,7 @@ app.get("/joueurs/:id/parties", function (req, res) {
                 if (typeof page === 'undefined' || page <= 0) page = 1;
                 let debutLimit = (page - 1) * 10;
 
-                let queryPartiesJoueur = `SELECT idPartie, nb_photos, statut, score, created_at FROM partie WHERE refJoueur = ${req.params.id} limit ${debutLimit}, 10`;
+                let queryPartiesJoueur = `SELECT * FROM partie WHERE refJoueur = ${req.params.id} AND statut = "Créée" ORDER BY created_at DESC limit ${debutLimit}, 10 `;
 
                 let count = 0;
 
@@ -273,15 +273,53 @@ app.get("/joueurs/:id/parties", function (req, res) {
 
                         resultPartiesJoueur.forEach(function (pj, index) {
                             resultPartiesJoueur[index] = JSON.parse(JSON.stringify({
-                                partiejoueur: pj,
-                                links: { self: { href: "/parties/" + pj.idPartie } }
+                                parties: pj,
                             }));
                         });
                         res.json({
                             "type": "ressource",
-                            "links": {
-                                "joueur": "/joueurs/" + req.params.id
-                            },
+                            "parties": resultPartiesJoueur
+                        });
+                    }
+                })
+            }
+        })
+    } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
+})
+
+app.get("/joueurs/:id/parties/terminee", function (req, res) {
+
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
+        let token = req.headers.authorization.split(' ')[1]
+        jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
+            if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
+            else {
+                let queryPartiesJoueur = `SELECT * FROM partie WHERE refJoueur = ${req.params.id} AND statut = "Terminée" ORDER BY updated_at DESC limit 25`;
+
+                db.query(queryPartiesJoueur, (errPartiesJoueur, resultPartiesJoueur) => {
+                    if (errPartiesJoueur) {
+                        let erreur = {
+                            "type": "error",
+                            "error": 500,
+                            "message": errPartiesJoueur
+                        };
+                    } else if (resultPartiesJoueur == "") {
+                        let erreur = {
+                            "type": "error",
+                            "error": 404,
+                            "message": "L'utilisateur " + req.params.id + " n'existe pas ou n'a pas joué de parties."
+                        };
+                        JSON.stringify(erreur);
+                        res.send(erreur);
+                    } else {
+
+                        resultPartiesJoueur.forEach(function (pj, index) {
+                            resultPartiesJoueur[index] = JSON.parse(JSON.stringify({
+                                parties: pj,
+                            }));
+                        });
+                        res.json({
+                            "type": "ressource",
                             "parties": resultPartiesJoueur
                         });
                     }
