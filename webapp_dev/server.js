@@ -273,7 +273,7 @@ app.get("/joueurs/:id/partiesCreees", function (req, res) {
 
                         resultPartiesJoueur.forEach(function (pj, index) {
                             resultPartiesJoueur[index] = JSON.parse(JSON.stringify({
-                                parties: pj,
+                                partie: pj,
                             }));
                         });
                         res.json({
@@ -315,7 +315,7 @@ app.get("/joueurs/:id/partiesTerminees", function (req, res) {
 
                         resultPartiesJoueur.forEach(function (pj, index) {
                             resultPartiesJoueur[index] = JSON.parse(JSON.stringify({
-                                parties: pj,
+                                partie: pj,
                             }));
                         });
                         res.json({
