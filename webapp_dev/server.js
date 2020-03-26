@@ -229,7 +229,7 @@ app.get('/series/:id/photos', function (req, res) {
     } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
 });
 
-app.get("/joueurs/:id/parties/cree", function (req, res) {
+app.get("/joueurs/:id/partiesCreees", function (req, res) {
 
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
         let token = req.headers.authorization.split(' ')[1]
@@ -287,7 +287,7 @@ app.get("/joueurs/:id/parties/cree", function (req, res) {
     } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
 })
 
-app.get("/joueurs/:id/parties/terminee", function (req, res) {
+app.get("/joueurs/:id/partiesTerminees", function (req, res) {
 
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
         let token = req.headers.authorization.split(' ')[1]
