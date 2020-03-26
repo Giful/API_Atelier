@@ -431,8 +431,9 @@ app.post("/parties", (req, res) => {
                 if (!req.body.nb_photos || !req.body.statut || !req.body.refJoueur || !req.body.refSerie) res.status(400).json({ "type": "error", "error": 400, "message": "Veuillez entrez les informations suivantes : nb_photos, statut, refJoueur et refSerie" });
                 else {
                     let id = uuid();
+                    let tkn = passwordHash.generate(id);
                     let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-                    db.query(`INSERT INTO partie (idPartie, token, nb_photos, statut, score, temps, refJoueur, refSerie, created_at, updated_at) VALUES ("${id}","${token}","${req.body.nb_photos}","${req.body.statut}",0,0,"${req.body.refJoueur}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
+                    db.query(`INSERT INTO partie (idPartie, token, nb_photos, statut, score, temps, refJoueur, refSerie, created_at, updated_at) VALUES ("${id}","${tkn}","${req.body.nb_photos}","${req.body.statut}",0,0,"${req.body.refJoueur}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
                         if (err) {
                             let erreur = {
                                 "type": "error",
@@ -491,7 +492,7 @@ app.post("/parties", (req, res) => {
 app.post("/joueurs", (req, res) => {
     if (!req.body.mail || !req.body.pseudo || !req.body.mdp) res.status(400).json({ "type": "error", "error": 400, "message": "Veuillez entrez les informations suivantes : mail, pseudo et mdp" });
     else {
-        let pwd = passwordHash.generate(req.body.mdp)
+        let pwd = passwordHash.generate(req.body.mdp);
         let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
         db.query(`INSERT INTO joueur (mail,pseudo,password,role,created_at,updated_at) VALUES ("${req.body.mail}","${req.body.pseudo}","${pwd}","u","${dateAct}","${dateAct}")`, (err, result) => {
             if (err) {
