@@ -229,6 +229,49 @@ app.get('/series/:id/photos', function (req, res) {
     } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
 });
 
+app.get("/joueurs/:id", function (req, res) {
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
+        let token = req.headers.authorization.split(' ')[1]
+        jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
+            if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
+            else {
+                let queryJoueurById = `SELECT * from joueur WHERE idJoueur = ${req.params.id}`;
+
+                db.query(queryJoueurById, (errJoueurId, resultjoueurId) => {
+                    if (errJoueurId) {
+                        let erreur = {
+                            "type": "error",
+                            "error": 500,
+                            "message": errJoueurId
+                        };
+                    } else if (resultjoueurId == "") {
+                        let erreur = {
+                            "type": "error",
+                            "error": 404,
+                            "message": req.params.id + " n'existe pas"
+                        };
+                        JSON.stringify(erreur);
+                        res.send(erreur);
+                    } else {
+                        res.json({
+                            "type": "ressource",
+                            "links": {
+                                "self": "/joueurs/" + req.params.id
+                            },
+                            "joueur": {
+                                "id": resultjoueurId[0].idJoueur,
+                                "created_at": resultjoueurId[0].created_at,
+                                "mail": resultjoueurId[0].mail,
+                                "pseudo": resultjoueurId[0].pseudo,
+                            }
+                        });
+                    }
+                });
+            }
+        })
+    } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
+});
+
 app.get("/joueurs/:id/partiesCreees", function (req, res) {
 
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
@@ -389,7 +432,7 @@ app.post("/parties", (req, res) => {
                 else {
                     let id = uuid();
                     let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-                    db.query(`INSERT INTO partie (idPartie, token, nb_photos, statut, refJoueur, refSerie, created_at, updated_at) VALUES ("${id}","${token}","${req.body.nb_photos}","${req.body.statut}","${req.body.refJoueur}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
+                    db.query(`INSERT INTO partie (idPartie, token, nb_photos, statut, score, temps, refJoueur, refSerie, created_at, updated_at) VALUES ("${id}","${token}","${req.body.nb_photos}","${req.body.statut}",0,0,"${req.body.refJoueur}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
                         if (err) {
                             let erreur = {
                                 "type": "error",
