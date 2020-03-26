@@ -88,37 +88,39 @@ app.get("/", (req, res) => {
  *     }
  */
 app.get('/series', function (req, res) {
-    let token = null;
-
-    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") token = req.headers.authorization.split(' ')[1];
-
-    if(token != null) {
-        let querySeries = `SELECT * FROM serie order by ville ASC`;
-
-        db.query(querySeries, (errSeries, resultSeries) => {
-            if (errSeries) {
-                let erreur = {
-                    "type": "error",
-                    "error": 500,
-                    "message": errSeries
-                };
-                JSON.stringify(erreur);
-                res.send(erreur);
-            }
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
+        let token = req.headers.authorization.split(' ')[1]
+        jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
+            if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
             else {
-                resultSeries.forEach(function (s, index) {
-                    resultSeries[index] = JSON.parse(JSON.stringify({
-                        serie: s
-                    }));
-                });
+                let querySeries = `SELECT * FROM serie order by ville ASC`;
 
-                res.json({
-                    "type": "collection",
-                    "series": resultSeries
+                db.query(querySeries, (errSeries, resultSeries) => {
+                    if (errSeries) {
+                        let erreur = {
+                            "type": "error",
+                            "error": 500,
+                            "message": errSeries
+                        };
+                        JSON.stringify(erreur);
+                        res.send(erreur);
+                    }
+                    else {
+                        resultSeries.forEach(function (s, index) {
+                            resultSeries[index] = JSON.parse(JSON.stringify({
+                                serie: s
+                            }));
+                        });
+
+                        res.json({
+                            "type": "collection",
+                            "series": resultSeries
+                        });
+                    }
                 });
             }
-        });
-    } else res.status(400).json({"type": "error","error": 400,"message": "Aucune Authorization Bearer Token"});
+        })
+    } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
 });
 
 // POST
@@ -173,24 +175,26 @@ app.get('/series', function (req, res) {
  *     }
  */
 app.post("/series", (req, res) => {
-    let token = null;
-
-    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") token = req.headers.authorization.split(' ')[1];
-
-    if(token != null) {
-        if(!req.body.ville || !req.body.latitude || !req.body.longitude || !req.body.zoom || !req.body.dist) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : ville, référence de la carte et dist"});
-        else {
-            let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-            db.query(`INSERT INTO serie (ville, latitude, longitude, zoom, dist, created_at, updated_at) VALUES ("${req.body.ville}","${req.body.latitude}","${req.body.longitude}","${req.body.zoom}","${req.body.dist}","${dateAct}","${dateAct}")`, (err, result) => {
-                if (err) {
-                    console.error(err);
-                    res.status(500).send(JSON.stringify(err));
-                } else {
-                    res.status(201).json(req.body);
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
+        let token = req.headers.authorization.split(' ')[1]
+        jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
+            if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
+            else {
+                if (!req.body.ville || !req.body.latitude || !req.body.longitude || !req.body.zoom || !req.body.dist) res.status(400).json({ "type": "error", "error": 400, "message": "Veuillez entrez les informations suivantes : ville, référence de la carte et dist" });
+                else {
+                    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
+                    db.query(`INSERT INTO serie (ville, latitude, longitude, zoom, dist, created_at, updated_at) VALUES ("${req.body.ville}","${req.body.latitude}","${req.body.longitude}","${req.body.zoom}","${req.body.dist}","${dateAct}","${dateAct}")`, (err, result) => {
+                        if (err) {
+                            console.error(err);
+                            res.status(500).send(JSON.stringify(err));
+                        } else {
+                            res.status(201).json(req.body);
+                        }
+                    });
                 }
-            });
-        }
-    } else res.status(400).json({"type": "error","error": 400,"message": "Aucune Authorization Bearer Token"});
+            }
+        })
+    } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
 });
 
 /**
@@ -243,24 +247,26 @@ app.post("/series", (req, res) => {
  *     }
  */
 app.post("/photos", (req, res) => {
-    let token = null;
-
-    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") token = req.headers.authorization.split(' ')[1];
-
-    if(token != null) {
-        if(!req.body.refSerie || !req.body.descr || !req.body.latitude || !req.body.longitude || !req.body.url) res.status(400).json({"type": "error","error": 400,"message": "Veuillez entrez les informations suivantes : refSerie, descr, position et url"});
-        else {
-            let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-            db.query(`INSERT INTO photo (descr, url, latitude, longitude, refSerie, created_at, updated_at) VALUES ("${req.body.descr}","${req.body.url}","${req.body.latitude}","${req.body.longitude}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
-                if (err) {
-                    console.error(err);
-                    res.status(500).send(JSON.stringify(err));
-                } else {
-                    res.status(201).json(req.body);
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
+        let token = req.headers.authorization.split(' ')[1]
+        jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
+            if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
+            else {
+                if (!req.body.refSerie || !req.body.descr || !req.body.latitude || !req.body.longitude || !req.body.url) res.status(400).json({ "type": "error", "error": 400, "message": "Veuillez entrez les informations suivantes : refSerie, descr, position et url" });
+                else {
+                    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
+                    db.query(`INSERT INTO photo (descr, url, latitude, longitude, refSerie, created_at, updated_at) VALUES ("${req.body.descr}","${req.body.url}","${req.body.latitude}","${req.body.longitude}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
+                        if (err) {
+                            console.error(err);
+                            res.status(500).send(JSON.stringify(err));
+                        } else {
+                            res.status(201).json(req.body);
+                        }
+                    });
                 }
-            });
-        }
-    } else res.status(400).json({"type": "error","error": 400,"message": "Aucune Authorization Bearer Token"});
+            }
+        })
+    } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
 });
 
 /**
@@ -298,7 +304,7 @@ app.post("/photos", (req, res) => {
 app.post("/joueurs/auth", (req, res) => {
     let mail, password;
 
-    if(req.headers.authorization) {
+    if (req.headers.authorization) {
         const base64Credentials = req.headers.authorization.split(' ')[1]
         const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii')
         mail = credentials.split(':')[0]
@@ -322,13 +328,13 @@ app.post("/joueurs/auth", (req, res) => {
                 JSON.stringify(erreur);
                 res.send(erreur);
             } else {
-                if(mail == result[0].mail && passwordHash.verify(password, result[0].password)) {
-                    let token = jwt.sign({}, 'privateKeyApi', {algorithm: 'HS256'})
-                    res.json({token: token})
-                } else res.status(401).json({"type": "error","error": 401,"message": "Mauvaise adresse mail ou mot de passe"})
+                if (mail == result[0].mail && passwordHash.verify(password, result[0].password)) {
+                    let token = jwt.sign({}, 'privateKeyApi', { algorithm: 'HS256' })
+                    res.json({ token: token })
+                } else res.status(401).json({ "type": "error", "error": 401, "message": "Mauvaise adresse mail ou mot de passe" })
             }
         })
-    } else res.status(401).json({"type": "error","error": 401,"message": "Aucune Authorization Basic Auth"})
+    } else res.status(401).json({ "type": "error", "error": 401, "message": "Aucune Authorization Basic Auth" })
 })
 
 // Les autres méthodes ne sont pas allowed
