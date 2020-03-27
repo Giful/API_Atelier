@@ -86,6 +86,13 @@ app.get("/", (req, res) => {
  *       "error": "400",
  *       "message": "Aucune Authorization Bearer Token"
  *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Mauvais Token"
+ *     }
  */
 app.get('/series', function (req, res) {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
@@ -165,6 +172,13 @@ app.get('/series', function (req, res) {
  *       "type": "error",
  *       "error": "400",
  *       "message": "Aucune Authorization Bearer Token"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Mauvais Token"
  *     }
  * 
  * @apiErrorExample {json} Error-Response:
@@ -299,6 +313,13 @@ app.post("/photos", (req, res) => {
  *       "type": "error",
  *       "error": "401",
  *       "message": "Aucune Authorization Basic Auth"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Mauvais Token"
  *     }
  * 
  * @apiErrorExample {json} Error-Response:

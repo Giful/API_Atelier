@@ -274,7 +274,7 @@ app.get("/joueurs/:id", function (req, res) {
 });
 
 /**
- * @api {get} /joueurs/:id/parties Affichage parties d'un joueur
+ * @api {get} /joueurs/:id/parties Afficher parties d'un joueur
  * @apiDescription Requête pour afficher toutes les parties d'un seul joueur.
  * @apiName GetPartiesByJoueur
  * @apiGroup BackOffice
@@ -989,7 +989,7 @@ app.get('/parties/:id', function (req, res) {
  *       "ville": "Nancy",
  *       "latitude": 48.6880756,
  *       "longitude": 6.1384175,
- *       "zoom": 12,
+ *       "zoom": 15,
  *       "dist": 10
  *     }
  * 

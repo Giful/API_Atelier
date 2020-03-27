@@ -87,6 +87,13 @@ app.get("/", (req, res) => {
  *       "error": "400",
  *       "message": "Aucune Authorization Bearer Token"
  *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Mauvais Token"
+ *     }
  */
 app.get('/series', function (req, res) {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
@@ -180,6 +187,13 @@ app.get('/series', function (req, res) {
  * @apiErrorExample {json} Error-Response:
  *     {
  *       "type": "error",
+ *       "error": "400",
+ *       "message": "Mauvais Token"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
  *       "error": "404",
  *       "message": "L'id 'ID de la série' n'existe pas"
  *     }
@@ -229,6 +243,57 @@ app.get('/series/:id/photos', function (req, res) {
     } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
 });
 
+/**
+ * @api {get} /joueurs/:id Informations joueur
+ * @apiDescription Requête pour afficher les informations d'un joueur.
+ * @apiName GetJoueurById
+ * @apiGroup WebApp
+ * 
+ * @apiHeader {String} Bearer Token  Token d'authentification du joueur - Authorization (Bearer Token).
+ * 
+ * @apiParam {Number} id ID du joueur
+ * 
+ * @apiSuccess {String} type  Type de la réponse.
+ * @apiSuccess {Object} links  Liste des liens des pages des résultats.
+ * @apiSuccess {Link} links.self  Lien pour afficher les informations sur le joueur.
+ * @apiSuccess {Object} joueur  Informations d'un joueur.
+ * @apiSuccess {Number} joueur.idjoueur  ID du joueur.
+ * @apiSuccess {String} joueur.mail  Mail du joueur.
+ * @apiSuccess {String} joueur.pseudo  Pseudo du joueur.
+ * @apiSuccess {Decimal} joueur.role  Role du joueur, "a" pour administrateur et "u" pour utilisateur simple.
+ * @apiSuccess {Number} joueur.created_at  Date de création du joueur.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *      "type": "ressource",
+ *      "links": {
+ *          "self": "/joueurs/1"
+ *      },
+ *      "joueur": {
+ *          "id": 1,
+ *          "mail": "gand@gmail.com",
+ *          "pseudo": "adminGand",
+ *          "role": "a",
+ *          "created_at": "2020-03-19T16:40:25.000Z"
+ *      }
+ * }
+ * 
+ * @apiError 400 Aucune Authorization Bearer Token.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Aucune Authorization Bearer Token"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Mauvais Token"
+ *     }
+ */
 app.get("/joueurs/:id", function (req, res) {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
         let token = req.headers.authorization.split(' ')[1]
@@ -413,6 +478,13 @@ app.get("/joueurs/:id/partiesTerminees", function (req, res) {
  *       "type": "error",
  *       "error": "400",
  *       "message": "Aucune Authorization Bearer Token"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Mauvais Token"
  *     }
  * 
  * @apiErrorExample {json} Error-Response:
@@ -616,6 +688,13 @@ app.post("/joueurs/auth", (req, res) => {
  *       "type": "error",
  *       "error": "400",
  *       "message": "Aucune Authorization Bearer Token"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Mauvais Token"
  *     }
  * 
  * @apiErrorExample {json} Error-Response:
