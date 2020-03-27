@@ -183,7 +183,7 @@ app.post("/series", (req, res) => {
                 if (!req.body.ville || !req.body.latitude || !req.body.longitude || !req.body.zoom || !req.body.dist) res.status(400).json({ "type": "error", "error": 400, "message": "Veuillez entrez les informations suivantes : ville, référence de la carte et dist" });
                 else {
                     let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-                    db.query(`INSERT INTO serie (ville, latitude, longitude, zoom, dist, created_at, updated_at) VALUES ("${req.body.ville}","${req.body.latitude}","${req.body.longitude}","${req.body.zoom}","${req.body.dist}","${dateAct}","${dateAct}")`, (err, result) => {
+                    db.query(`INSERT INTO serie (ville, latitude, longitude, zoom, dist, created_at, updated_at) VALUES (?,?,?,?,?,?,?)`, [req.body.ville, req.body.latitude, req.body.longitude, req.body.zoom, req.body.dist, dateAct, dateAct], (err, result) => {
                         if (err) {
                             console.error(err);
                             res.status(500).send(JSON.stringify(err));
@@ -262,7 +262,7 @@ app.post("/photos", (req, res) => {
                 if (!req.body.refSerie || !req.body.descr || !req.body.latitude || !req.body.longitude || !req.body.url) res.status(400).json({ "type": "error", "error": 400, "message": "Veuillez entrez les informations suivantes : refSerie, descr, position et url" });
                 else {
                     let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-                    db.query(`INSERT INTO photo (descr, url, latitude, longitude, refSerie, created_at, updated_at) VALUES ("${req.body.descr}","${req.body.url}","${req.body.latitude}","${req.body.longitude}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
+                    db.query(`INSERT INTO photo (descr, url, latitude, longitude, refSerie, created_at, updated_at) VALUES (?,?,?,?,?,?,?)`, [req.body.descr, req.body.url, req.body.latitude, req.body.longitude, req.body.refSerie, dateAct, dateAct], (err, result) => {
                         if (err) {
                             console.error(err);
                             res.status(500).send(JSON.stringify(err));
@@ -317,7 +317,7 @@ app.post("/joueurs/auth", (req, res) => {
         mail = credentials.split(':')[0]
         password = credentials.split(':')[1]
 
-        db.query(`select mail, password from joueur where mail = "${mail}"`, (err, result) => {
+        db.query(`select mail, password from joueur where mail = ?`, [mail], (err, result) => {
             if (err) {
                 let erreur = {
                     "type": "error",
