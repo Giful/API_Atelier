@@ -235,9 +235,9 @@ app.get("/joueurs/:id", function (req, res) {
         jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
             if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
             else {
-                let queryJoueurById = `SELECT * from joueur WHERE idJoueur = ${req.params.id}`;
+                let queryJoueurById = `SELECT * from joueur WHERE idJoueur = ?`;
 
-                db.query(queryJoueurById, (errJoueurId, resultjoueurId) => {
+                db.query(queryJoueurById, [req.params.id], (errJoueurId, resultjoueurId) => {
                     if (errJoueurId) {
                         let erreur = {
                             "type": "error",
@@ -283,11 +283,11 @@ app.get("/joueurs/:id/partiesCreees", function (req, res) {
                 if (typeof page === 'undefined' || page <= 0) page = 1;
                 let debutLimit = (page - 1) * 10;
 
-                let queryPartiesJoueur = `SELECT * FROM partie WHERE refJoueur = ${req.params.id} AND statut = "Créée" ORDER BY created_at DESC limit ${debutLimit}, 10 `;
+                let queryPartiesJoueur = `SELECT * FROM partie WHERE refJoueur = ? AND statut = "Créée" ORDER BY created_at DESC limit ?, 10 `;
 
                 let count = 0;
 
-                db.query(queryPartiesJoueur, (errPartiesJoueur, resultPartiesJoueur) => {
+                db.query(queryPartiesJoueur, [req.params.id, debutLimit], (errPartiesJoueur, resultPartiesJoueur) => {
                     if (errPartiesJoueur) {
                         let erreur = {
                             "type": "error",
@@ -337,9 +337,9 @@ app.get("/joueurs/:id/partiesTerminees", function (req, res) {
         jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
             if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
             else {
-                let queryPartiesJoueur = `SELECT * FROM partie WHERE refJoueur = ${req.params.id} AND statut = "Terminée" ORDER BY updated_at DESC limit 25`;
+                let queryPartiesJoueur = `SELECT * FROM partie WHERE refJoueur = ? AND statut = "Terminée" ORDER BY updated_at DESC limit 25`;
 
-                db.query(queryPartiesJoueur, (errPartiesJoueur, resultPartiesJoueur) => {
+                db.query(queryPartiesJoueur, [req.params.id], (errPartiesJoueur, resultPartiesJoueur) => {
                     if (errPartiesJoueur) {
                         let erreur = {
                             "type": "error",
@@ -433,7 +433,7 @@ app.post("/parties", (req, res) => {
                     let id = uuid();
                     let tkn = passwordHash.generate(id);
                     let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-                    db.query(`INSERT INTO partie (idPartie, token, nb_photos, statut, score, temps, refJoueur, refSerie, created_at, updated_at) VALUES ("${id}","${tkn}","${req.body.nb_photos}","${req.body.statut}",0,0,"${req.body.refJoueur}","${req.body.refSerie}","${dateAct}","${dateAct}")`, (err, result) => {
+                    db.query(`INSERT INTO partie (idPartie, token, nb_photos, statut, score, temps, refJoueur, refSerie, created_at, updated_at) VALUES (?,?,?,?,0,0,?,?,?,?)`, [id, tkn, req.body.nb_photos, req.body.statut, req.body.refJoueur, req.body.refSerie, dateAct, dateAct], (err, result) => {
                         if (err) {
                             let erreur = {
                                 "type": "error",
@@ -494,7 +494,7 @@ app.post("/joueurs", (req, res) => {
     else {
         let pwd = passwordHash.generate(req.body.mdp);
         let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-        db.query(`INSERT INTO joueur (mail,pseudo,password,role,created_at,updated_at) VALUES ("${req.body.mail}","${req.body.pseudo}","${pwd}","u","${dateAct}","${dateAct}")`, (err, result) => {
+        db.query(`INSERT INTO joueur (mail,pseudo,password,role,created_at,updated_at) VALUES (?,?,?,"u",?,?)`, [req.body.mail, req.body.pseudo, pwd, dateAct, dateAct], (err, result) => {
             if (err) {
                 let erreur = {
                     "type": "error",
@@ -553,7 +553,7 @@ app.post("/joueurs/auth", (req, res) => {
         mail = credentials.split(':')[0]
         password = credentials.split(':')[1]
 
-        db.query(`select idJoueur, mail, password from joueur where mail = "${mail}"`, (err, result) => {
+        db.query(`select idJoueur, mail, password from joueur where mail = ?`, [mail], (err, result) => {
             if (err) {
                 let erreur = {
                     "type": "error",
@@ -636,7 +636,7 @@ app.put("/parties/:id", (req, res) => {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
         let token = req.headers.authorization.split(' ')[1]
         jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
-            db.query("SELECT idPartie FROM partie WHERE idPartie = " + "'" + req.params.id + "'", (err_cmd, result_cmd) => {
+            db.query("SELECT idPartie FROM partie WHERE idPartie = ?", [req.params.id], (err_cmd, result_cmd) => {
                 if (err_cmd) {
                     let erreur = {
                         "type": "error",
@@ -658,7 +658,7 @@ app.put("/parties/:id", (req, res) => {
                     if (!req.body.statut || typeof req.body.score == 'undefined' || !req.body.temps) res.status(400).json({ "type": "error", "error": 400, "message": "Veuillez entrez les informations suivantes : statut, score et temps" });
                     else {
                         let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-                        db.query(`UPDATE partie SET statut = '${req.body.statut}', score = '${req.body.score}',temps ='${req.body.temps}', updated_at = '${dateAct}' WHERE idPartie = '${req.params.id}'`, (err, result) => {
+                        db.query(`UPDATE partie SET statut = ?, score = ?,temps = ?, updated_at = ? WHERE idPartie = ?`, [req.body.statut, req.body.score, req.body.temps, dateAct, req.params.id], (err, result) => {
                             if (err) {
                                 let erreur = {
                                     "type": "error",
