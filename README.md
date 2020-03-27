@@ -17,7 +17,10 @@ npm install
 
 ### Démarrer le projet
 
-> docker-compose up
+``` bash
+# Pour démarrer le docker
+docker-compose up
+```
 
 ### Import des données avec Adminer de la base de données MariaDB
 
@@ -25,7 +28,10 @@ npm install
 
 ### Re-Démarrer le projet après avoir importé toutes les données
 
-> docker-compose up
+``` bash
+# Pour démarrer le docker
+docker-compose up
+```
 
 ### URLs
 
