@@ -190,9 +190,9 @@ app.get('/series/:id/photos', function (req, res) {
         jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
             if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
             else {
-                let queryPhotos = `SELECT * FROM photo WHERE refSerie = ${req.params.id}`;
+                let queryPhotos = `SELECT * FROM photo WHERE refSerie = ?`;
 
-                db.query(queryPhotos, (errPhotos, resultPhotos) => {
+                db.query(queryPhotos, [req.params.id], (errPhotos, resultPhotos) => {
                     if (errPhotos) {
                         let erreur = {
                             "type": "error",
