@@ -36,7 +36,56 @@ app.use(cors(corsOptions))
 app.get("/", (req, res) => {
     res.send("Atelier API\n");
 });
-
+/**
+ * @api {get} /joueurs Afficher joueurs
+ * @apiDescription Requête pour afficher tous les joueurs.
+ * @apiName GetJoueurs
+ * @apiGroup BackOffice
+ * 
+ * @apiHeader {String} Bearer Token  Token d'authentification du joueur - Authorization (Bearer Token).
+ * 
+ * @apiSuccess {String} type  Type de la réponse.
+ * @apiSuccess {Object} series  Liste des séries.
+ * @apiSuccess {Object} serie  Informations d'une série.
+ * @apiSuccess {Number} series.serie.idSerie  ID de la série.
+ * @apiSuccess {String} series.serie.ville  Ville de la série.
+ * @apiSuccess {Decimal} series.serie.latitude  Latitude de la ville.
+ * @apiSuccess {Decimal} series.serie.longitude  Longitude de la ville.
+ * @apiSuccess {Number} series.serie.zoom  Zoom correspondant à l'affichage de la carte.
+ * @apiSuccess {Number} series.serie.dist  Distance pour calculer le score.
+ * @apiSuccess {Date} series.serie.created_at  Date de création de la série.
+ * @apiSuccess {Date} series.serie.updated_at  Date de modification de la série.
+ * @apiSuccess {Date} series.serie.deleted_at  Date de suppression de la série.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     {
+ *       "type": "collection",
+ *       "series": [
+ *          {
+ *              "serie": {
+ *                  "idSerie": 1,
+ *                  "ville": "Nancy",
+ *                  "latitude": 48.692054,
+ *                  "longitude": 6.184417,
+ *                  "zoom": 12,
+ *                  "dist": 10,
+ *                  "created_at": "2020-03-19T16:12:52.000Z",
+ *                  "updated_at": "2020-03-19T16:12:52.000Z",
+ *                  "deleted_at": null
+ *              }
+ *          }
+ *       ]
+ *     }
+ * 
+ * @apiError 400 Aucune Authorization Bearer Token.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Aucune Authorization Bearer Token"
+ *     }
+ */
 app.get("/joueurs", (req, res) => {
 
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
@@ -208,6 +257,56 @@ app.get("/joueurs/:id/parties", function (req, res) {
     } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
 })
 
+/**
+ * @api {get} /series Afficher série
+ * @apiDescription Requête pour afficher une série.
+ * @apiName GetSeries
+ * @apiGroup BackOffice
+ * 
+ * @apiHeader {String} Bearer Token  Token d'authentification du joueur - Authorization (Bearer Token).
+ * 
+ * @apiSuccess {String} type  Type de la réponse.
+ * @apiSuccess {Object} series  Liste des séries.
+ * @apiSuccess {Object} serie  Informations d'une série.
+ * @apiSuccess {Number} series.serie.idSerie  ID de la série.
+ * @apiSuccess {String} series.serie.ville  Ville de la série.
+ * @apiSuccess {Decimal} series.serie.latitude  Latitude de la ville.
+ * @apiSuccess {Decimal} series.serie.longitude  Longitude de la ville.
+ * @apiSuccess {Number} series.serie.zoom  Zoom correspondant à l'affichage de la carte.
+ * @apiSuccess {Number} series.serie.dist  Distance pour calculer le score.
+ * @apiSuccess {Date} series.serie.created_at  Date de création de la série.
+ * @apiSuccess {Date} series.serie.updated_at  Date de modification de la série.
+ * @apiSuccess {Date} series.serie.deleted_at  Date de suppression de la série.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     {
+ *       "type": "collection",
+ *       "series": [
+ *          {
+ *              "serie": {
+ *                  "idSerie": 1,
+ *                  "ville": "Nancy",
+ *                  "latitude": 48.692054,
+ *                  "longitude": 6.184417,
+ *                  "zoom": 12,
+ *                  "dist": 10,
+ *                  "created_at": "2020-03-19T16:12:52.000Z",
+ *                  "updated_at": "2020-03-19T16:12:52.000Z",
+ *                  "deleted_at": null
+ *              }
+ *          }
+ *       ]
+ *     }
+ * 
+ * @apiError 400 Aucune Authorization Bearer Token.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Aucune Authorization Bearer Token"
+ *     }
+ */
 app.get('/series', function (req, res) {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
         let token = req.headers.authorization.split(' ')[1]
@@ -357,96 +456,6 @@ app.get('/series/:id', function (req, res) {
     } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
 });
 
-app.get('/series/:id/photos', function (req, res) {
-    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
-        let token = req.headers.authorization.split(' ')[1]
-        jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
-            if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
-            else {
-                let queryPhotos = `SELECT * FROM photo WHERE refSerie = ${req.params.id}`;
-
-                db.query(queryPhotos, (errPhotos, resultPhotos) => {
-                    if (errPhotos) {
-                        let erreur = {
-                            "type": "error",
-                            "error": 500,
-                            "message": errPhotos
-                        };
-                        JSON.stringify(erreur);
-                        res.send(erreur);
-                    }
-                    else if (resultPhotos == "") {
-                        let erreur = {
-                            "type": "error",
-                            "error": 404,
-                            "message": "L'id " + req.params.id + " n'existe pas"
-                        };
-                        JSON.stringify(erreur);
-                        res.send(erreur);
-                    }
-                    else {
-                        resultPhotos.forEach(function (p, index) {
-                            resultPhotos[index] = JSON.parse(JSON.stringify({
-                                photo: p,
-                                links: { self: { href: "/photos/" + p.idPhoto } }
-                            }));
-                        });
-
-                        res.json({
-                            "type": "resource",
-                            "photos": resultPhotos
-                        });
-                    }
-                });
-            }
-        })
-    } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
-});
-
-app.get('/photos/:id', function (req, res) {
-    if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
-        let token = req.headers.authorization.split(' ')[1]
-        jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
-            if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
-            else {
-                let queryPhotosId = `SELECT * FROM photo WHERE idPhoto = ${req.params.id}`;
-
-                db.query(queryPhotosId, (errPhotosId, resultPhotosId) => {
-                    if (errPhotosId) {
-                        let erreur = {
-                            "type": "error",
-                            "error": 500,
-                            "message": errPhotosId
-                        };
-                        JSON.stringify(erreur);
-                        res.send(erreur);
-                    }
-                    else if (resultPhotosId == "") {
-                        let erreur = {
-                            "type": "error",
-                            "error": 404,
-                            "message": "L'id " + req.params.id + " n'existe pas"
-                        };
-                        JSON.stringify(erreur);
-                        res.send(erreur);
-                    }
-                    else {
-                        res.json({
-                            "type": "resource",
-                            "links": {
-                                "self": {
-                                    "href": "/photos/" + req.params.id
-                                }
-                            },
-                            "photo": resultPhotosId
-                        });
-                    }
-                });
-            }
-        })
-    } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
-});
-
 app.get("/parties", function (req, res) {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
         let token = req.headers.authorization.split(' ')[1]
@@ -520,7 +529,7 @@ app.get('/parties/:id', function (req, res) {
             if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
             else {
 
-                let queryPartiesId = `SELECT * FROM partie WHERE idPartie = ${req.params.id}`;
+                let queryPartiesId = `SELECT * FROM partie WHERE idPartie = '${req.params.id}'`;
 
                 db.query(queryPartiesId, (errPartieId, resultPartieId) => {
                     if (errPartieId) {
@@ -606,27 +615,134 @@ app.get('/parties/:id', function (req, res) {
 
 // POST
 
+/**
+ * @api {post} /series Ajouter série
+ * @apiDescription Requête pour ajouter une série.
+ * @apiName PostSeries
+ * @apiGroup BackOffice
+ * 
+ * @apiHeader {String} Bearer Token  Token d'authentification du joueur - Authorization (Bearer Token).
+ * @apiHeader {Object} body  Informations de la série à renseigner en json.
+ * 
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *       "ville": "Nancy",
+ *       "latitude": 48.6880756,
+ *       "longitude": 6.1384175,
+ *       "zoom": 12,
+ *       "dist": 10
+ *     }
+ * 
+ * @apiSuccess {String} ville  Ville de la série.
+ * @apiSuccess {Decimal} latitude  Latitude de la ville.
+ * @apiSuccess {Decimal} longitude  Longitude de la ville.
+ * @apiSuccess {Number} zoom  Zoom correspondant à l'affichage de la carte.
+ * @apiSuccess {Number} dist  Distance pour calculer le score.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     {
+ *       "ville": "Nancy",
+ *       "latitude": 48.6880756,
+ *       "longitude": 6.1384175,
+ *       "zoom": 12,
+ *       "dist": 10
+ *     }
+ * 
+ * @apiError 400 Aucune Authorization Bearer Token ou mauvaises informations concernant la série.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Aucune Authorization Bearer Token"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Veuillez entrez les informations suivantes : ville, référence de la carte et dist"
+ *     }
+ */
 app.post("/series", (req, res) => {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
         let token = req.headers.authorization.split(' ')[1]
         jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
             if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
             else {
-                if (!req.body.ville || !req.body.latitude || !req.body.longitude || !req.body.zoom || !req.body.dist) res.status(400).json({ "type": "error", "error": 400, "message": "Veuillez entrez les informations suivantes : ville, référence de la carte et dist" });
-                let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-                db.query(`INSERT INTO serie (ville, latitude,longitude, zoom, dist, created_at, updated_at) VALUES ("${req.body.ville}","${req.body.lat}","${req.body.long}","${req.body.zoom}","${req.body.dist}","${dateAct}","${dateAct}")`, (err, result) => {
-                    if (err) {
-                        console.error(err);
-                        res.status(500).send(JSON.stringify(err));
-                    } else {
-                        res.status(201).json(req.body);
-                    }
-                });
+                if (!req.body.ville || !req.body.lat || !req.body.long || !req.body.zoom || !req.body.dist) res.status(400).json({ "type": "error", "error": 400, "message": "Veuillez entrez les informations suivantes : ville, référence de la carte et dist" });
+                else {
+                    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
+                    db.query(`INSERT INTO serie (ville, latitude,longitude, zoom, dist, created_at, updated_at) VALUES ("${req.body.ville}","${req.body.lat}","${req.body.long}","${req.body.zoom}","${req.body.dist}","${dateAct}","${dateAct}")`, (err, result) => {
+                        if (err) {
+                            console.error(err);
+                            res.status(500).send(JSON.stringify(err));
+                        } else {
+                            res.status(201).json(req.body);
+                        }
+                    });
+                }
             }
         })
     } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
 });
 
+/**
+ * @api {post} /photos Ajouter photo
+ * @apiDescription Requête pour ajouter une photo.
+ * @apiName PostPhotos
+ * @apiGroup BackOffice
+ * 
+ * @apiHeader {String} Bearer Token  Token d'authentification du joueur - Authorization (Bearer Token).
+ * @apiHeader {Object} body  Informations de la photo à renseigner en json.
+ * 
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *       "descr": "Place Stanislas",
+ *       "url": "https://www.tourisme-lorraine.fr/sitlorimg/1920/0/aHR0cHM6Ly93d3cuc2l0bG9yLmZyL3Bob3Rvcy83MzcvcGxhY2VzdGFuaXNsYXNkZW51aXQuanBn.jpg",
+ *       "latitude": 48.6936184,
+ *       "longitude": 6.1810526,
+ *       "refSerie": 1
+ *     }
+ * 
+ * @apiSuccess {String} descr  Description de la photo.
+ * @apiSuccess {String} url  Url de la photo.
+ * @apiSuccess {Decimal} latitude  Latitude de la photo.
+ * @apiSuccess {Decimal} longitude  Longitude de la photo.
+ * @apiSuccess {Number} refSerie  Référence de la série où se trouve la photo.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     {
+ *       "descr": "Place Stanislas",
+ *       "url": "https://www.tourisme-lorraine.fr/sitlorimg/1920/0/aHR0cHM6Ly93d3cuc2l0bG9yLmZyL3Bob3Rvcy83MzcvcGxhY2VzdGFuaXNsYXNkZW51aXQuanBn.jpg",
+ *       "latitude": 48.6936184,
+ *       "longitude": 6.1810526,
+ *       "refSerie": 1
+ *     }
+ * 
+ * @apiError 400 Aucune Authorization Bearer Token, mauvais format du token ou mauvaises informations concernant la photo.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Aucune Authorization Bearer Token"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Mauvais Token"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Veuillez entrez les informations suivantes : refSerie, descr, position et url"
+ *     }
+ */
 app.post("/photos", (req, res) => {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
         let token = req.headers.authorization.split(' ')[1]
@@ -648,6 +764,38 @@ app.post("/photos", (req, res) => {
     } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
 });
 
+/**
+ * @api {post} /joueurs/auth Token auth joueur
+ * @apiDescription Requête pour récupérer le token d'authentification du joueur.
+ * @apiName PostJoueursAuth
+ * @apiGroup BackOffice
+ * 
+ * @apiHeader {String} username  Adresse mail du joueur - Authorization (Basic Auth).
+ * @apiHeader {String} password  Mot de passe du joueur - Authorization (Basic Auth).
+ * 
+ * @apiSuccess {String} token  Token d'authentification du joueur.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     {
+ *       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1ODUwNjg4NDF9.k3tKJg1BmTidIGYk0g5ap9Sa0CXyIMxtRL90sOhCdOE"
+ *     }
+ * 
+ * @apiError 401 Aucune Authorization Basic Auth ou mauvaise adresse mail ou mot de passe.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "401",
+ *       "message": "Aucune Authorization Basic Auth"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "401",
+ *       "message": "Mauvaise adresse mail ou mot de passe"
+ *     }
+ */
 app.post("/joueurs/auth", (req, res) => {
     let mail, password;
 

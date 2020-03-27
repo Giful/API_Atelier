@@ -622,7 +622,7 @@ app.post("/joueurs/auth", (req, res) => {
  *     {
  *       "type": "error",
  *       "error": "400",
- *       "message": "Veuillez entrez les informations suivantes : statut et score"
+ *       "message": "Veuillez entrez les informations suivantes : statut, score et temps"
  *     }
  * 
  * @apiErrorExample {json} Error-Response:
@@ -636,34 +636,52 @@ app.put("/parties/:id", (req, res) => {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
         let token = req.headers.authorization.split(' ')[1]
         jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
-            if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
-            else {
-                if (!req.body.statut || !req.body.score) res.status(400).json({ "type": "error", "error": 400, "message": "Veuillez entrez les informations suivantes : statut et score" });
+            db.query("SELECT idPartie FROM partie WHERE idPartie = " + "'" + req.params.id + "'", (err_cmd, result_cmd) => {
+                if (err_cmd) {
+                    let erreur = {
+                        "type": "error",
+                        "error": 500,
+                        "message": err_cmd
+                    };
+                    JSON.stringify(erreur);
+                    res.send(erreur);
+                } else if(result_cmd == "") {
+                    let erreur = {
+                        "type": "error",
+                        "error": 404,
+                        "message": req.params.id + " n'est pas un id valide"
+                    };
+                    JSON.stringify(erreur);
+                    res.send(erreur);
+                } else if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
                 else {
-                    let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-                    db.query(`UPDATE partie SET statut = "${req.body.statut}", score = "${req.body.score}", updated_at = "${dateAct}" WHERE idPartie = "${req.params.id}"`, (err, result) => {
-                        if (err) {
-                            let erreur = {
-                                "type": "error",
-                                "error": 500,
-                                "message": err
-                            };
-                            JSON.stringify(erreur);
-                            res.send(erreur);
-                        } else if (result.length == 0) {
-                            let erreur = {
-                                "type": "error",
-                                "error": 404,
-                                "message": "L'id " + req.params.id + " n'existe pas"
-                            };
-                            JSON.stringify(erreur);
-                            res.send(erreur);
-                        } else {
-                            res.status(201).json(req.body);
-                        }
-                    });
+                    if (!req.body.statut || typeof req.body.score == 'undefined' || !req.body.temps) res.status(400).json({ "type": "error", "error": 400, "message": "Veuillez entrez les informations suivantes : statut, score et temps" });
+                    else {
+                        let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
+                        db.query(`UPDATE partie SET statut = '${req.body.statut}', score = '${req.body.score}',temps ='${req.body.temps}', updated_at = '${dateAct}' WHERE idPartie = '${req.params.id}'`, (err, result) => {
+                            if (err) {
+                                let erreur = {
+                                    "type": "error",
+                                    "error": 500,
+                                    "message": err
+                                };
+                                JSON.stringify(erreur);
+                                res.send(erreur);
+                            } else if (result.length == 0) {
+                                let erreur = {
+                                    "type": "error",
+                                    "error": 404,
+                                    "message": "L'id " + req.params.id + " n'existe pas"
+                                };
+                                JSON.stringify(erreur);
+                                res.send(erreur);
+                            } else {
+                                res.status(201).json(req.body);
+                            }
+                        });
+                    }
                 }
-            }
+            })
         })
     } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
 });
