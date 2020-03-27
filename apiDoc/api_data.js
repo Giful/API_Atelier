@@ -133,7 +133,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "./atelier_dev/server.js",
+    "filename": "./backoffice_dev/server.js",
     "groupTitle": "BackOffice"
   },
   {
@@ -306,7 +306,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "./atelier_dev/server.js",
+    "filename": "./backoffice_dev/server.js",
     "groupTitle": "BackOffice"
   },
   {
@@ -506,7 +506,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "./atelier_dev/server.js",
+    "filename": "./backoffice_dev/server.js",
     "groupTitle": "BackOffice"
   },
   {
@@ -721,7 +721,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "./atelier_dev/server.js",
+    "filename": "./backoffice_dev/server.js",
     "groupTitle": "BackOffice"
   },
   {
@@ -786,7 +786,14 @@ define({ "api": [
             "type": "Object",
             "optional": false,
             "field": "parties",
-            "description": "<p>Informations d'un joueur.</p>"
+            "description": "<p>Parties du joueur.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "partiejoueur",
+            "description": "<p>Informations sur la partie</p>"
           },
           {
             "group": "Success 200",
@@ -886,7 +893,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "./atelier_dev/server.js",
+    "filename": "./backoffice_dev/server.js",
     "groupTitle": "BackOffice"
   },
   {
@@ -1100,7 +1107,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "./atelier_dev/server.js",
+    "filename": "./backoffice_dev/server.js",
     "groupTitle": "BackOffice"
   },
   {
@@ -1294,7 +1301,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "./atelier_dev/server.js",
+    "filename": "./backoffice_dev/server.js",
     "groupTitle": "BackOffice"
   },
   {
@@ -1374,7 +1381,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "./atelier_dev/server.js",
+    "filename": "./backoffice_dev/server.js",
     "groupTitle": "BackOffice"
   },
   {
@@ -1491,7 +1498,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "./atelier_dev/server.js",
+    "filename": "./backoffice_dev/server.js",
     "groupTitle": "BackOffice"
   },
   {
@@ -1608,7 +1615,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "./atelier_dev/server.js",
+    "filename": "./backoffice_dev/server.js",
     "groupTitle": "BackOffice"
   },
   {
@@ -2175,6 +2182,350 @@ define({ "api": [
         {
           "title": "Success-Response:",
           "content": "{\n     \"type\": \"ressource\",\n     \"links\": {\n         \"self\": \"/joueurs/1\"\n     },\n     \"joueur\": {\n         \"id\": 1,\n         \"mail\": \"gand@gmail.com\",\n         \"pseudo\": \"adminGand\",\n         \"role\": \"a\",\n         \"created_at\": \"2020-03-19T16:40:25.000Z\"\n     }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400",
+            "description": "<p>Aucune Authorization Bearer Token.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "{\n  \"type\": \"error\",\n  \"error\": \"400\",\n  \"message\": \"Aucune Authorization Bearer Token\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "{\n  \"type\": \"error\",\n  \"error\": \"400\",\n  \"message\": \"Mauvais Token\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./webapp_dev/server.js",
+    "groupTitle": "WebApp"
+  },
+  {
+    "type": "get",
+    "url": "/joueurs/:id/partiesCreees",
+    "title": "Afficher les parties créées d'un joueur",
+    "description": "<p>Requête pour afficher toutes les parties créées d'un seul joueur.</p>",
+    "name": "GetPartiesCreeesByJoueur",
+    "group": "WebApp",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Bearer",
+            "description": "<p>Token  Token d'authentification du joueur - Authorization (Bearer Token).</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID du joueur</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "type",
+            "description": "<p>Type de la réponse.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "parties",
+            "description": "<p>Liste des parties Créées.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "partie",
+            "description": "<p>Informations sur la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "parties.partie.idPartie",
+            "description": "<p>ID de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "parties.partie.token",
+            "description": "<p>Token de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "parties.partie.nb_photos",
+            "description": "<p>Nombre de photos de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "parties.partie.statut",
+            "description": "<p>Statut de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "parties.partie.score",
+            "description": "<p>Score de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "parties.partie.temps",
+            "description": "<p>Temps de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "parties.partie.refJoueur",
+            "description": "<p>Id du joueur de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "parties.partie.refSerie",
+            "description": "<p>Id de la série de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "parties.partie.created_at",
+            "description": "<p>Date de création de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "parties.partie.updated_at",
+            "description": "<p>Date de la mise à jour de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "parties.partie.deleted_at",
+            "description": "<p>Date de la suppression de la partie.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n  \"type\": \"ressource\",\n  \"parties\": [\n      {\n          \"partie\": {\n              \"idPartie\": \"032b8f70-705c-11ea-bf83-6119755a76f1\",\n              \"token\": \"sha1$419ae0ed$1$7b6ccf3154799a0010e010e80c89a4c62c9c8f72\",\n              \"nb_photos\": 5,\n              \"statut\": \"Créée\",\n              \"score\": 39,\n              \"temps\": 44,\n             \"refJoueur\": 2,\n              \"refSerie\": 1,\n              \"created_at\": \"2020-03-27T18:51:48.000Z\",\n              \"updated_at\": \"2020-03-27T18:52:36.000Z\",\n              \"deleted_at\": null\n          }\n      },",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400",
+            "description": "<p>Aucune Authorization Bearer Token.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "{\n  \"type\": \"error\",\n  \"error\": \"400\",\n  \"message\": \"Aucune Authorization Bearer Token\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "{\n  \"type\": \"error\",\n  \"error\": \"400\",\n  \"message\": \"Mauvais Token\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./webapp_dev/server.js",
+    "groupTitle": "WebApp"
+  },
+  {
+    "type": "get",
+    "url": "/joueurs/:id/partieTerminees",
+    "title": "Afficher les parties terminées d'un joueur",
+    "description": "<p>Requête pour afficher toutes les parties terminées d'un seul joueur.</p>",
+    "name": "GetPartiesTermineesByJoueur",
+    "group": "WebApp",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Bearer",
+            "description": "<p>Token  Token d'authentification du joueur - Authorization (Bearer Token).</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID du joueur</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "type",
+            "description": "<p>Type de la réponse.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "parties",
+            "description": "<p>Liste des parties Créées.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "partie",
+            "description": "<p>Informations sur la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "parties.partie.idPartie",
+            "description": "<p>ID de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "parties.partie.token",
+            "description": "<p>Token de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "parties.partie.nb_photos",
+            "description": "<p>Nombre de photos de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "parties.partie.statut",
+            "description": "<p>Statut de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "parties.partie.score",
+            "description": "<p>Score de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "parties.partie.temps",
+            "description": "<p>Temps de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "parties.partie.refJoueur",
+            "description": "<p>Id du joueur de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "parties.partie.refSerie",
+            "description": "<p>Id de la série de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "parties.partie.created_at",
+            "description": "<p>Date de création de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "parties.partie.updated_at",
+            "description": "<p>Date de la mise à jour de la partie.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "parties.partie.deleted_at",
+            "description": "<p>Date de la suppression de la partie.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n  \"type\": \"ressource\",\n  \"parties\": [\n      {\n          \"partie\": {\n              \"idPartie\": \"032b8f70-705c-11ea-bf83-6119755a76f1\",\n              \"token\": \"sha1$419ae0ed$1$7b6ccf3154799a0010e010e80c89a4c62c9c8f72\",\n              \"nb_photos\": 5,\n              \"statut\": \"Terminée\",\n              \"score\": 39,\n              \"temps\": 44,\n             \"refJoueur\": 2,\n              \"refSerie\": 1,\n              \"created_at\": \"2020-03-27T18:51:48.000Z\",\n              \"updated_at\": \"2020-03-27T18:52:36.000Z\",\n              \"deleted_at\": null\n          }\n      },",
           "type": "json"
         }
       ]

@@ -336,7 +336,67 @@ app.get("/joueurs/:id", function (req, res) {
         })
     } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
 });
-
+/**
+ * @api {get} /joueurs/:id/partiesCreees Afficher les parties créées d'un joueur
+ * @apiDescription Requête pour afficher toutes les parties créées d'un seul joueur.
+ * @apiName GetPartiesCreeesByJoueur
+ * @apiGroup WebApp
+ * 
+ * @apiHeader {String} Bearer Token  Token d'authentification du joueur - Authorization (Bearer Token).
+ * 
+ * @apiParam {Number} id ID du joueur
+ * 
+ * @apiSuccess {String} type  Type de la réponse.
+ * @apiSuccess {Object} parties  Liste des parties Créées.
+ * @apiSuccess {Object} partie Informations sur la partie.
+ * @apiSuccess {Number} parties.partie.idPartie  ID de la partie.
+ * @apiSuccess {String} parties.partie.token  Token de la partie.
+ * @apiSuccess {String} parties.partie.nb_photos  Nombre de photos de la partie.
+ * @apiSuccess {String} parties.partie.statut Statut de la partie.
+ * @apiSuccess {Number} parties.partie.score Score de la partie.
+ * @apiSuccess {Number} parties.partie.temps Temps de la partie.
+ * @apiSuccess {Number} parties.partie.refJoueur Id du joueur de la partie.
+ * @apiSuccess {Number} parties.partie.refSerie Id de la série de la partie.
+ * @apiSuccess {String} parties.partie.created_at Date de création de la partie.
+ * @apiSuccess {String} parties.partie.updated_at Date de la mise à jour de la partie.
+ * @apiSuccess {String} parties.partie.deleted_at Date de la suppression de la partie.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *   "type": "ressource",
+ *   "parties": [
+ *       {
+ *           "partie": {
+ *               "idPartie": "032b8f70-705c-11ea-bf83-6119755a76f1",
+ *               "token": "sha1$419ae0ed$1$7b6ccf3154799a0010e010e80c89a4c62c9c8f72",
+ *               "nb_photos": 5,
+ *               "statut": "Créée",
+ *               "score": 39,
+ *               "temps": 44,
+ *              "refJoueur": 2,
+ *               "refSerie": 1,
+ *               "created_at": "2020-03-27T18:51:48.000Z",
+ *               "updated_at": "2020-03-27T18:52:36.000Z",
+ *               "deleted_at": null
+ *           }
+ *       },
+ * 
+ * @apiError 400 Aucune Authorization Bearer Token.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Aucune Authorization Bearer Token"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Mauvais Token"
+ *     }
+ */
 app.get("/joueurs/:id/partiesCreees", function (req, res) {
 
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {
@@ -395,6 +455,67 @@ app.get("/joueurs/:id/partiesCreees", function (req, res) {
     } else res.status(400).json({ "type": "error", "error": 400, "message": "Aucune Authorization Bearer Token" });
 })
 
+/**
+ * @api {get} /joueurs/:id/partieTerminees Afficher les parties terminées d'un joueur
+ * @apiDescription Requête pour afficher toutes les parties terminées d'un seul joueur.
+ * @apiName GetPartiesTermineesByJoueur
+ * @apiGroup WebApp
+ * 
+ * @apiHeader {String} Bearer Token  Token d'authentification du joueur - Authorization (Bearer Token).
+ * 
+ * @apiParam {Number} id ID du joueur
+ * 
+ * @apiSuccess {String} type  Type de la réponse.
+ * @apiSuccess {Object} parties  Liste des parties Créées.
+ * @apiSuccess {Object} partie Informations sur la partie.
+ * @apiSuccess {Number} parties.partie.idPartie  ID de la partie.
+ * @apiSuccess {String} parties.partie.token  Token de la partie.
+ * @apiSuccess {String} parties.partie.nb_photos  Nombre de photos de la partie.
+ * @apiSuccess {String} parties.partie.statut Statut de la partie.
+ * @apiSuccess {Number} parties.partie.score Score de la partie.
+ * @apiSuccess {Number} parties.partie.temps Temps de la partie.
+ * @apiSuccess {Number} parties.partie.refJoueur Id du joueur de la partie.
+ * @apiSuccess {Number} parties.partie.refSerie Id de la série de la partie.
+ * @apiSuccess {String} parties.partie.created_at Date de création de la partie.
+ * @apiSuccess {String} parties.partie.updated_at Date de la mise à jour de la partie.
+ * @apiSuccess {String} parties.partie.deleted_at Date de la suppression de la partie.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *   "type": "ressource",
+ *   "parties": [
+ *       {
+ *           "partie": {
+ *               "idPartie": "032b8f70-705c-11ea-bf83-6119755a76f1",
+ *               "token": "sha1$419ae0ed$1$7b6ccf3154799a0010e010e80c89a4c62c9c8f72",
+ *               "nb_photos": 5,
+ *               "statut": "Terminée",
+ *               "score": 39,
+ *               "temps": 44,
+ *              "refJoueur": 2,
+ *               "refSerie": 1,
+ *               "created_at": "2020-03-27T18:51:48.000Z",
+ *               "updated_at": "2020-03-27T18:52:36.000Z",
+ *               "deleted_at": null
+ *           }
+ *       },
+ * 
+ * @apiError 400 Aucune Authorization Bearer Token.
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Aucune Authorization Bearer Token"
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "type": "error",
+ *       "error": "400",
+ *       "message": "Mauvais Token"
+ *     }
+ */
 app.get("/joueurs/:id/partiesTerminees", function (req, res) {
 
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] == "Bearer") {

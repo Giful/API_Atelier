@@ -5,16 +5,16 @@ networks:
     driver: bridge
 
 services:
-  api.atelier:
+  api.backoffice:
     image: node
     environment:
       - NODE_ENV=dev
-      - VHOST_HOSTNAME=api.atelier.local
+      - VHOST_HOSTNAME=api.backoffice.local
     ports:
       - "19080:8080"
     volumes:
-      - ./atelier_dev:/app/atelier_api
-    working_dir: /app/atelier_api
+      - ./backoffice_dev:/app/backoffice_api
+    working_dir: /app/backoffice_api
     command: npm run dev
     networks:
       - atelier.net

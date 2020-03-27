@@ -286,7 +286,8 @@ app.get("/joueurs/:id", function (req, res) {
  * @apiSuccess {String} type  Type de la réponse.
  * @apiSuccess {Object} links  Lien du joueur.
  * @apiSuccess {Link} links.self  Lien pour afficher les informations sur le joueur.
- * @apiSuccess {Object} parties  Informations d'un joueur.
+ * @apiSuccess {Object} parties  Parties du joueur.
+ * @apiSuccess {Object} partiejoueur Informations sur la partie
  * @apiSuccess {Number} parties.partiejoueur.idPartie  ID de la partie.
  * @apiSuccess {String} parties.partiejoueur.token  Token de la partie.
  * @apiSuccess {String} parties.partiejoueur.nb_photos  Nombre de photos de la partie.
