@@ -11,11 +11,11 @@ services:
       - NODE_ENV=dev
       - VHOST_HOSTNAME=api.atelier.local
     ports:
-      - "19080:8080"
+      - "60080:8080"
     volumes:
       - ./atelier_dev:/app/atelier_api
     working_dir: /app/atelier_api
-    command: npm run dev
+    command: node server.js
     networks:
       - atelier.net
     links:
@@ -27,11 +27,11 @@ services:
       - NODE_ENV=dev
       - VHOST_HOSTNAME=api.mobile.local
     ports:
-      - "19180:8080"
+      - "60180:8080"
     volumes:
       - ./mobile_dev:/app/mobile_api
     working_dir: /app/mobile_api
-    command: npm run dev
+    command: node server.js
     networks:
       - atelier.net
     links:
@@ -43,11 +43,11 @@ services:
       - NODE_ENV=dev
       - VHOST_HOSTNAME=api.webapp.local
     ports:
-      - "19280:8080"
+      - "60280:8080"
     volumes:
       - ./webapp_dev:/app/webapp_api
     working_dir: /app/webapp_api
-    command: npm run dev
+    command: node server.js
     networks:
       - atelier.net
     links:
@@ -75,7 +75,7 @@ services:
   myadmin:
     image: phpmyadmin/phpmyadmin:latest
     ports:
-      - "8080:80"
+      - "60020:80"
     links:
       - mysql.atelier:db
     networks:
