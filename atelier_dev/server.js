@@ -736,7 +736,7 @@ app.get('/series/:id', function (req, res) {
  * @apiSuccess {Date} parties.partie.updated_at  Date de modification de la partie.
  * @apiSuccess {Date} parties.partie.deleted_at  Date de suppression de la partie.
  * @apiSuccess {Object} links Lien de la partie.
- * @apiSucces {Link} links.self Informations sur la partie seulement.
+ * @apiSuccess {Link} links.self Informations sur la partie seulement.
  * 
  * @apiSuccessExample {json} Success-Response:
  *     {
