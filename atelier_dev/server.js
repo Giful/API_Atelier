@@ -134,8 +134,8 @@ app.get("/joueurs", (req, res) => {
                         if (page > pageMax) page = pageMax;
                         let debutLimit = (page - 1) * 10;
 
-                        let queryJoueurs = `SELECT idJoueur, mail, pseudo, role, created_at FROM joueur limit ${debutLimit}, 10`;
-                        db.query(queryJoueurs, (errJoueurs, resultJoueurs) => {
+                        let queryJoueurs = `SELECT idJoueur, mail, pseudo, role, created_at FROM joueur limit ?, 10`;
+                        db.query(queryJoueurs, [debutLimit], (errJoueurs, resultJoueurs) => {
                             if (errJoueurs) console.log(errJoueurs);
                             else {
                                 let next = parseInt(page) + 1;
@@ -235,9 +235,9 @@ app.get("/joueurs/:id", function (req, res) {
         jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
             if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
             else {
-                let queryJoueurById = `SELECT idJoueur, mail, pseudo, role, created_at from joueur WHERE idJoueur = ${req.params.id}`;
+                let queryJoueurById = `SELECT idJoueur, mail, pseudo, role, created_at from joueur WHERE idJoueur = ?`;
 
-                db.query(queryJoueurById, (errJoueurId, resultjoueurId) => {
+                db.query(queryJoueurById, [req.params.id], (errJoueurId, resultjoueurId) => {
                     if (errJoueurId) {
                         let erreur = {
                             "type": "error",
@@ -351,11 +351,11 @@ app.get("/joueurs/:id/parties", function (req, res) {
                 if (typeof page === 'undefined' || page <= 0) page = 1;
                 let debutLimit = (page - 1) * 10;
 
-                let queryPartiesJoueur = `SELECT idPartie, token, nb_photos, statut, score, temps, refJoueur, refSerie, created_at  FROM partie WHERE refJoueur = ${req.params.id} limit ${debutLimit}, 10`;
+                let queryPartiesJoueur = `SELECT idPartie, token, nb_photos, statut, score, temps, refJoueur, refSerie, created_at  FROM partie WHERE refJoueur = ? limit ?, 10`;
 
                 let count = 0;
 
-                db.query(queryPartiesJoueur, (errPartiesJoueur, resultPartiesJoueur) => {
+                db.query(queryPartiesJoueur, [req.params.id, debutLimit], (errPartiesJoueur, resultPartiesJoueur) => {
                     if (errPartiesJoueur) {
                         let erreur = {
                             "type": "error",
@@ -489,10 +489,10 @@ app.get('/series', function (req, res) {
                 if (typeof page === 'undefined' || page <= 0) page = 1;
                 let debutLimit = (page - 1) * 10;
 
-                let querySeries = `SELECT * FROM serie order by ville ASC limit ${debutLimit}, 10`;
+                let querySeries = `SELECT * FROM serie order by ville ASC limit ?, 10`;
 
                 let count = 0;
-                db.query(querySeries, (errSeries, resultSeries) => {
+                db.query(querySeries, [debutLimit], (errSeries, resultSeries) => {
                     if (errSeries) {
                         let erreur = {
                             "type": "error",
@@ -629,9 +629,9 @@ app.get('/series/:id', function (req, res) {
         jwt.verify(token, 'privateKeyApi', { algorithm: "HS256" }, (err) => {
             if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
             else {
-                let querySerieId = `SELECT * FROM serie WHERE idSerie = ${req.params.id}`;
+                let querySerieId = `SELECT * FROM serie WHERE idSerie = ?`;
 
-                db.query(querySerieId, (errSerieId, resultSerieId) => {
+                db.query(querySerieId, [req.params.id], (errSerieId, resultSerieId) => {
                     if (errSerieId) {
                         let erreur = {
                             "type": "error",
@@ -650,9 +650,9 @@ app.get('/series/:id', function (req, res) {
                         res.send(erreur);
                     }
                     else {
-                        let queryPhotos = `SELECT * FROM photo WHERE refSerie = ${req.params.id}`;
+                        let queryPhotos = `SELECT * FROM photo WHERE refSerie = ?`;
 
-                        db.query(queryPhotos, (errPhotos, resultPhotos) => {
+                        db.query(queryPhotos, [req.params.id], (errPhotos, resultPhotos) => {
                             if (errPhotos) {
                                 let erreur = {
                                     "type": "error",
@@ -815,8 +815,8 @@ app.get("/parties", function (req, res) {
                         if (page > pageMax) page = pageMax;
                         let debutLimit = (page - 1) * 10;
 
-                        let queryParties = `SELECT * FROM partie limit ${debutLimit}, 10`;
-                        db.query(queryParties, (errParties, resultParties) => {
+                        let queryParties = `SELECT * FROM partie limit ?, 10`;
+                        db.query(queryParties, [debutLimit], (errParties, resultParties) => {
                             if (errParties) console.log(errParties);
                             else {
 
@@ -931,9 +931,9 @@ app.get('/parties/:id', function (req, res) {
             if (err) res.status(400).json({ "type": "error", "error": 400, "message": "Mauvais token" })
             else {
 
-                let queryPartiesId = `SELECT * FROM partie WHERE idPartie = '${req.params.id}'`;
+                let queryPartiesId = `SELECT * FROM partie WHERE idPartie = ?`;
 
-                db.query(queryPartiesId, (errPartieId, resultPartieId) => {
+                db.query(queryPartiesId, [req.params.id], (errPartieId, resultPartieId) => {
                     if (errPartieId) {
                         let erreur = {
                             "type": "error",
@@ -1040,7 +1040,7 @@ app.post("/series", (req, res) => {
                 if (!req.body.ville || !req.body.lat || !req.body.long || !req.body.zoom || !req.body.dist) res.status(400).json({ "type": "error", "error": 400, "message": "Veuillez entrez les informations suivantes : ville, référence de la carte et dist" });
                 else {
                     let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-                    db.query(`INSERT INTO serie (ville, latitude,longitude, zoom, dist, created_at, updated_at) VALUES ("${req.body.ville}","${req.body.lat}","${req.body.long}","${req.body.zoom}","${req.body.dist}","${dateAct}","${dateAct}")`, (err, result) => {
+                    db.query(`INSERT INTO serie (ville, latitude,longitude, zoom, dist, created_at, updated_at) VALUES (?,?,?,?,?,?,?)`, [req.body.ville, req.body.lat, req.body.long, req.body.zoom, req.body.dist, dateAct, dateAct], (err, result) => {
                         if (err) {
                             console.error(err);
                             res.status(500).send(JSON.stringify(err));
@@ -1119,7 +1119,7 @@ app.post("/photos", (req, res) => {
                 if (!req.body.refSerie || !req.body.descr || !req.body.lat || !req.body.lng || !req.body.url) res.status(400).json({ "type": "error", "error": 400, "message": "Veuillez entrez les informations suivantes : refSerie, descr, position et url" });
                 else {
                     let dateAct = new Date().toJSON().slice(0, 19).replace('T', ' ');
-                    db.query(`INSERT INTO photo (refSerie, descr, latitude, longitude, url, created_at, updated_at) VALUES ("${req.body.refSerie}","${req.body.descr}","${req.body.lat}","${req.body.lng}","${req.body.url}","${dateAct}","${dateAct}")`, (err, result) => {
+                    db.query(`INSERT INTO photo (refSerie, descr, latitude, longitude, url, created_at, updated_at) VALUES (?,?,?,?,?,?,?)`, [req.body.refSerie, req.body.descr, req.body.lat, req.body.lng, req.body.url, dateAct, dateAct], (err, result) => {
                         if (err) {
                             console.error(err);
                             res.status(500).send(JSON.stringify(err));
@@ -1181,7 +1181,7 @@ app.post("/joueurs/auth", (req, res) => {
         mail = credentials.split(':')[0]
         password = credentials.split(':')[1]
 
-        db.query(`select idJoueur, mail, role, password from joueur where mail = "${mail}"`, (err, result) => {
+        db.query(`select idJoueur, mail, role, password from joueur where mail = ?`, [mail], (err, result) => {
             if (err) {
                 let erreur = {
                     "type": "error",
