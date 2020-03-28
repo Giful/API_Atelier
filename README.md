@@ -33,7 +33,7 @@ docker-compose up
 docker-compose up
 ```
 
-### URLs
+### URLs localhost
 
 1. BackOffice : http://localhost:19080
 
@@ -42,6 +42,21 @@ docker-compose up
 3. WebApp : http://localhost:19280
 
 4. Accès à l'administration "Adminer" de la base de données MariaDB : http://localhost:8080
+
+- serveur : mysql.atelier
+- base de données : atelier_bdd
+- utilisateur : atelier_bdd
+- mot de passe : atelier_bdd
+
+### URLs docketu
+
+1. BackOffice : http://docketu.iutnc.univ-lorraine.fr:60080
+
+2. Mobile : https://docketu.iutnc.univ-lorraine.fr:60180
+
+3. WebApp : http://docketu.iutnc.univ-lorraine.fr:60280
+
+4. Accès à l'administration "Adminer" de la base de données MariaDB : http://docketu.iutnc.univ-lorraine.fr:60020
 
 - serveur : mysql.atelier
 - base de données : atelier_bdd
