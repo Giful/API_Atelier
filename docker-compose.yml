@@ -11,11 +11,11 @@ services:
       - NODE_ENV=dev
       - VHOST_HOSTNAME=api.backoffice.local
     ports:
-      - "60080:8080"
+      - "19080:8080"
     volumes:
       - ./backoffice_dev:/app/backoffice_api
     working_dir: /app/backoffice_api
-    command: node server.js
+    command: npm run dev
     networks:
       - atelier.net
     links:
@@ -27,11 +27,11 @@ services:
       - NODE_ENV=dev
       - VHOST_HOSTNAME=api.mobile.local
     ports:
-      - "60180:8080"
+      - "19180:8080"
     volumes:
       - ./mobile_dev:/app/mobile_api
     working_dir: /app/mobile_api
-    command: node server.js
+    command: npm run dev
     networks:
       - atelier.net
     links:
@@ -43,11 +43,11 @@ services:
       - NODE_ENV=dev
       - VHOST_HOSTNAME=api.webapp.local
     ports:
-      - "60280:8080"
+      - "19280:8080"
     volumes:
       - ./webapp_dev:/app/webapp_api
     working_dir: /app/webapp_api
-    command: node server.js
+    command: npm run dev
     networks:
       - atelier.net
     links:
@@ -75,7 +75,7 @@ services:
   myadmin:
     image: phpmyadmin/phpmyadmin:latest
     ports:
-      - "60020:80"
+      - "8080:80"
     links:
       - mysql.atelier:db
     networks:
